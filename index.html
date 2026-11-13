@@ -1,0 +1,2857 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Escudo Invisible | Anatomía, Mecánica y Evolución de la Atmósfera</title>
+
+  <!-- Google Fonts: Space Grotesk, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            space: '#050a14',
+            panel: '#0a1222',
+            panelLight: '#101b33',
+            cyanNeon: '#00f0ff',
+            thermalOrange: '#ff5e3a',
+            bioticGreen: '#00ff9d',
+            violetPulse: '#9d4edd'
+          },
+          fontFamily: {
+            display: ['Space Grotesk', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --bg-space: #050a14;
+      --cyan-neon: #00f0ff;
+      --thermal-orange: #ff5e3a;
+      --biotic-green: #00ff9d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Fondo de cuadrícula editorial de telemetría */
+    .telemetry-grid {
+      background-image:
+        linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Tarjetas HUD con esquinas recortadas / bordes brillantes */
+    .hud-card {
+      background: linear-gradient(145deg, rgba(12, 22, 42, 0.88), rgba(6, 12, 24, 0.94));
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hud-card:hover {
+      border-color: rgba(0, 240, 255, 0.45);
+      box-shadow: 0 12px 45px rgba(0, 240, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .glow-cyan {
+      text-shadow: 0 0 18px rgba(0, 240, 255, 0.55);
+    }
+
+    .glow-orange {
+      text-shadow: 0 0 18px rgba(255, 94, 58, 0.55);
+    }
+
+    .glow-green {
+      text-shadow: 0 0 18px rgba(0, 255, 157, 0.55);
+    }
+
+    /* Sliders personalizados */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(0, 240, 255, 0.15);
+      height: 8px;
+      border-radius: 999px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #00f0ff;
+      border: 3px solid #050a14;
+      box-shadow: 0 0 15px #00f0ff;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Animaciones SVG personalizadas */
+    @keyframes dashFlow {
+      to {
+        stroke-dashoffset: -48;
+      }
+    }
+
+    .animate-flow {
+      stroke-dasharray: 8 8;
+      animation: dashFlow 1.6s linear infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      70% { transform: scale(1.12); opacity: 0.1; }
+      100% { transform: scale(0.95); opacity: 0; }
+    }
+
+    .pulse-ring {
+      transform-origin: center;
+      animation: pulseRing 2.8s infinite ease-out;
+    }
+
+    /* Scrollbar estilizado */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050a14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #162847;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f0ff;
+    }
+
+    /* Modo Presentación Guiada */
+    body.presentation-mode section.slide-section {
+      display: none;
+    }
+    body.presentation-mode section.slide-section.active-slide {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 5.5rem;
+      padding-bottom: 5.5rem;
+    }
+  </style>
+</head>
+<body class="telemetry-grid selection:bg-cyanNeon selection:text-space">
+
+  <!-- BARRA SUPERIOR DE TELEMETRÍA Y CONTROLES -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-[#050a14]/90 backdrop-blur-md border-b border-cyanNeon/20 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Identificador de misión -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-cyanNeon/10 border border-cyanNeon/40 flex items-center justify-center text-cyanNeon font-mono font-bold shadow-[0_0_15px_rgba(0,240,255,0.25)]">
+          O₃
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-white tracking-wide text-sm sm:text-base">EL ESCUDO INVISIBLE</span>
+            <span class="hidden md:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-cyanNeon/10 text-cyanNeon border border-cyanNeon/30">TELEMETRÍA ATMOSFÉRICA</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono">ALTITUD: <span id="hudAltitude" class="text-cyanNeon font-semibold">0 km</span> | ERA: <span id="hudEra" class="text-bioticGreen font-semibold">Actualidad</span></p>
+        </div>
+      </div>
+
+      <!-- Controles de Modo y Navegación -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="toggleModeBtn" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold border border-cyanNeon/40 bg-cyanNeon/10 text-cyanNeon hover:bg-cyanNeon hover:text-space transition flex items-center gap-1.5">
+          <span id="modeDot" class="w-2 h-2 rounded-full bg-cyanNeon animate-ping"></span>
+          <span id="modeLabel">Modo: Exploración Libre</span>
+        </button>
+
+        <div class="flex items-center gap-1 bg-panel border border-slate-700/80 rounded-lg p-1">
+          <button id="prevSlideBtn" title="Sección anterior" class="px-2.5 py-1 rounded text-xs font-mono text-slate-300 hover:bg-cyanNeon/20 hover:text-cyanNeon transition disabled:opacity-40">
+            ◀ Ant
+          </button>
+          <span id="slideCounter" class="px-2 text-xs font-mono text-cyanNeon font-bold">01 / 07</span>
+          <button id="nextSlideBtn" title="Siguiente sección" class="px-2.5 py-1 rounded text-xs font-mono text-slate-300 hover:bg-cyanNeon/20 hover:text-cyanNeon transition">
+            Sig ▶
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVEGACIÓN LATERAL FLOTANTE (ALTÍMETRO / ÍNDICE) -->
+  <nav aria-label="Navegación de módulos" class="fixed right-3 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end gap-3 bg-[#070e1c]/85 backdrop-blur-md p-2.5 rounded-2xl border border-cyanNeon/20">
+    <div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest px-1 border-b border-slate-800 pb-1 w-full text-center">Módulos</div>
+    <button data-target="sec-hero" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">00. Portada</span>
+      <span class="w-3 h-3 rounded-full border border-cyanNeon bg-cyanNeon shadow-[0_0_10px_#00f0ff] transition-all"></span>
+    </button>
+    <button data-target="sec-mod1" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">01. Composición</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+    <button data-target="sec-mod2" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">02. 5 Capas & Ozono</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+    <button data-target="sec-mod3" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">03. Termómetro</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+    <button data-target="sec-mod4" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">04. Termodinámica</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+    <button data-target="sec-mod5" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">05. 4.500 M.a.</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+    <button data-target="sec-mod6" class="nav-dot group flex items-center gap-2 text-right">
+      <span class="text-[11px] font-mono text-slate-400 group-hover:text-cyanNeon transition opacity-0 group-hover:opacity-100">06. Soporte & Quiz</span>
+      <span class="w-3 h-3 rounded-full border border-slate-500 bg-transparent group-hover:border-cyanNeon transition-all"></span>
+    </button>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main id="mainContainer">
+
+    <!-- ===================================================================== -->
+    <!-- 0. PORTADA INMERSIVA ("EL ESCUDO INVISIBLE") - SLIDE 1                 -->
+    <!-- ===================================================================== -->
+    <section id="sec-hero" data-index="0" data-alt="0 – 10.000 km" data-era="Presente" class="slide-section relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-20 pb-12 px-4">
+      <!-- Canvas de fondo con horizonte terrestre, halo atmosférico y partículas espaciales -->
+      <canvas id="heroCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+      <!-- Escala altimétrica lateral izquierda decorativa -->
+      <div class="hidden xl:flex flex-col justify-between h-[65vh] fixed left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none font-mono text-[10px] text-cyanNeon/60 border-l border-cyanNeon/30 pl-2">
+        <span>10.000 km — EXOSFERA</span>
+        <span>700 km — TERMOSFERA</span>
+        <span>80 km — MESOSFERA</span>
+        <span>50 km — ESTRATOSFERA</span>
+        <span>12 km — TROPOSFERA</span>
+        <span>0 km — SUPERFICIE</span>
+      </div>
+
+      <div class="relative z-10 max-w-5xl mx-auto text-center space-y-6">
+        <div class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyanNeon/10 border border-cyanNeon/40 text-cyanNeon font-mono text-xs tracking-widest uppercase">
+          <span class="w-2 h-2 rounded-full bg-bioticGreen animate-pulse"></span>
+          Sistema Planetario de Protección Biogeoquímica
+        </div>
+
+        <h1 class="hero-title font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-tight">
+          EL <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyanNeon via-sky-300 to-bioticGreen glow-cyan">ESCUDO INVISIBLE</span>
+        </h1>
+
+        <p class="hero-subtitle font-display text-xl sm:text-2xl md:text-3xl text-cyan-100/90 font-medium max-w-3xl mx-auto">
+          Anatomía, mecánica y evolución de la atmósfera terrestre
+        </p>
+
+        <p class="hero-desc text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          Un viaje vertical de <span class="text-cyanNeon font-mono font-semibold">10.000 kilómetros</span> desde la superficie hasta el vacío interplanetario, y una mirada retrospectiva de <span class="text-bioticGreen font-mono font-semibold">4.500 millones de años</span>.
+        </p>
+
+        <!-- Tarjetas rápidas de telemetría de portada -->
+        <div class="hero-stats grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto pt-4">
+          <div class="hud-card rounded-2xl p-4 text-left">
+            <div class="text-xs font-mono text-cyanNeon uppercase">Espesor Total</div>
+            <div class="text-2xl font-display font-bold text-white mt-1">~10.000 km</div>
+            <div class="text-xs text-slate-400 mt-1">5 capas térmicas diferenciadas</div>
+          </div>
+          <div class="hud-card rounded-2xl p-4 text-left">
+            <div class="text-xs font-mono text-bioticGreen uppercase">Historia Evolutiva</div>
+            <div class="text-2xl font-display font-bold text-white mt-1">4.500 M.a.</div>
+            <div class="text-xs text-slate-400 mt-1">De atmósfera tóxica a biosfera</div>
+          </div>
+          <div class="hud-card rounded-2xl p-4 text-left">
+            <div class="text-xs font-mono text-thermalOrange uppercase">Escudo Térmico</div>
+            <div class="text-2xl font-display font-bold text-white mt-1">+15 °C</div>
+            <div class="text-xs text-slate-400 mt-1">Frente a -18 °C sin atmósfera</div>
+          </div>
+        </div>
+
+        <div class="hero-cta pt-6 flex flex-wrap justify-center gap-4">
+          <button onclick="navigateToSection('sec-mod1')" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyanNeon to-sky-400 text-space font-display font-bold text-sm sm:text-base shadow-[0_0_25px_rgba(0,240,255,0.45)] hover:scale-105 transition cursor-pointer">
+            Iniciar Expedición Vertical ↓
+          </button>
+          <button onclick="enableGuidedMode()" class="px-6 py-3.5 rounded-xl bg-panel border border-cyanNeon/40 text-cyanNeon font-mono text-xs sm:text-sm hover:bg-cyanNeon/15 transition cursor-pointer">
+            ▶ Modo Presentación Diapositiva a Diapositiva
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 1. MÓDULO 1: LA ENVOLTURA GASEOSA Y COMPOSICIÓN DEL AIRE (SLIDES 2-3)  -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod1" data-index="1" data-alt="0 – 10.000 km" data-era="Atmósfera Moderna" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-12">
+        <!-- Encabezado de Módulo -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-cyanNeon uppercase tracking-widest">Módulo 01 // Arquitectura y Química</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">Una Envoltura Gaseosa Sostenida por la Gravedad</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            La gravedad terrestre actúa como fuerza de anclaje que impide que los gases escapen al vacío espacial.
+          </p>
+        </div>
+
+        <!-- Grid principal: Izquierda Gravedad y Envoltura / Derecha Receta del Aire -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Panel Izquierdo: 3 Pilares de la Envoltura Gaseosa + Simulador Gravitacional -->
+          <div class="lg:col-span-5 flex flex-col justify-between gap-6">
+            <div class="hud-card rounded-2xl p-6 space-y-5 flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-display text-xl font-bold text-white">Anclaje Gravitacional</h3>
+                <span class="text-xs font-mono px-2.5 py-1 rounded bg-cyanNeon/10 text-cyanNeon">0 km → 10.000 km</span>
+              </div>
+
+              <!-- Canvas interactivo de gravedad reteniendo moléculas -->
+              <div class="relative rounded-xl overflow-hidden border border-cyanNeon/20 bg-[#040811] h-56">
+                <canvas id="gravityCanvas" class="w-full h-full block"></canvas>
+                <div class="absolute bottom-2 left-3 right-3 flex justify-between items-center text-[11px] font-mono bg-space/80 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-800">
+                  <span class="text-cyanNeon">Gravedad: <strong id="gravValueText">1.0 G (Tierra)</strong></span>
+                  <button id="toggleGravityBtn" class="px-2 py-0.5 rounded bg-thermalOrange/20 text-thermalOrange border border-thermalOrange/40 hover:bg-thermalOrange hover:text-white transition">
+                    Simular Baja Gravedad
+                  </button>
+                </div>
+              </div>
+
+              <div class="space-y-3 text-sm">
+                <div class="p-3.5 rounded-xl bg-panelLight/70 border-l-4 border-cyanNeon">
+                  <h4 class="font-display font-bold text-cyanNeon">1. Límite Difuso (~10.000 km)</h4>
+                  <p class="text-slate-300 text-xs mt-1 leading-relaxed">No existe un techo sólido: la atmósfera se extiende desde la superficie terrestre hasta desvanecerse gradualmente en el espacio exterior.</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-panelLight/70 border-l-4 border-thermalOrange">
+                  <h4 class="font-display font-bold text-thermalOrange">2. Fuerza de Anclaje</h4>
+                  <p class="text-slate-300 text-xs mt-1 leading-relaxed">La atracción gravitatoria retiene esta mezcla de gases y concentra el <strong>75% de toda su masa</strong> en los primeros kilómetros.</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-panelLight/70 border-l-4 border-bioticGreen">
+                  <h4 class="font-display font-bold text-bioticGreen">3. Zona Habitable</h4>
+                  <p class="text-slate-300 text-xs mt-1 leading-relaxed">Permite la existencia de agua líquida en superficie, regula el clima global y actúa como escudo contra radiación y meteoritos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Derecho: La Receta Exacta del Aire (Slide 3) -->
+          <div class="lg:col-span-7 hud-card rounded-2xl p-6 flex flex-col justify-between gap-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="font-display text-2xl font-bold text-white">La Receta Exacta del Aire que Respiramos</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Haz clic o pasa el cursor sobre cada gas para inspeccionar su dinámica molecular</p>
+              </div>
+              <span class="font-mono text-xs text-bioticGreen bg-bioticGreen/10 border border-bioticGreen/30 px-3 py-1 rounded-full">100% Mezcla Atmosférica</span>
+            </div>
+
+            <!-- Visualización combinada: SVG Donut Interactivo + Cámara de Moléculas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <!-- Gráfico Donut SVG Animado -->
+              <div class="relative flex items-center justify-center">
+                <svg viewBox="0 0 240 240" class="w-56 h-56 sm:w-64 sm:h-64 -rotate-90 drop-shadow-[0_0_20px_rgba(0,240,255,0.15)]">
+                  <!-- Fondo anillo -->
+                  <circle cx="120" cy="120" r="88" fill="none" stroke="#111d35" stroke-width="26" />
+                  <!-- 78% Nitrógeno (Circunferencia = 2 * pi * 88 ≈ 552.9) -> 78% = 431.3 -->
+                  <circle id="arc-N2" cx="120" cy="120" r="88" fill="none" stroke="#00f0ff" stroke-width="26"
+                    stroke-dasharray="431.3 552.9" stroke-dashoffset="0"
+                    class="cursor-pointer transition-all duration-300 hover:stroke-[30]" onclick="selectGas('N2')" />
+                  <!-- 21% Oxígeno -> 21% = 116.1 -->
+                  <circle id="arc-O2" cx="120" cy="120" r="88" fill="none" stroke="#00ff9d" stroke-width="26"
+                    stroke-dasharray="116.1 552.9" stroke-dashoffset="-431.3"
+                    class="cursor-pointer transition-all duration-300 hover:stroke-[30]" onclick="selectGas('O2')" />
+                  <!-- 0.9% Argón + 0.1% Traza -> 1% = 5.5 -->
+                  <circle id="arc-AR" cx="120" cy="120" r="88" fill="none" stroke="#ff5e3a" stroke-width="28"
+                    stroke-dasharray="5.5 552.9" stroke-dashoffset="-547.4"
+                    class="cursor-pointer transition-all duration-300 hover:stroke-[32]" onclick="selectGas('TRACE')" />
+                </svg>
+                <!-- Centro del Donut -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-6">
+                  <span id="donutPercent" class="font-display text-3xl font-bold text-cyanNeon">78%</span>
+                  <span id="donutFormula" class="font-mono text-sm font-bold text-white">Nitrógeno (N₂)</span>
+                  <span id="donutTag" class="text-[11px] text-slate-400 mt-0.5">Componente estructural</span>
+                </div>
+              </div>
+
+              <!-- Simulador de partículas moleculares en tiempo real -->
+              <div class="space-y-3">
+                <div class="relative rounded-xl overflow-hidden border border-slate-700/80 bg-[#040914] h-48">
+                  <canvas id="gasMoleculeCanvas" class="w-full h-full block"></canvas>
+                  <div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-space/85 border border-slate-700 text-[10px] font-mono text-slate-300">
+                    Cámara Espectroscópica en Vivo
+                  </div>
+                </div>
+                <div id="gasDetailBox" class="p-3.5 rounded-xl bg-panelLight border border-cyanNeon/30 text-xs text-slate-200 leading-relaxed">
+                  <strong class="text-cyanNeon font-mono">N₂ (78%):</strong> Gas diatómico estable e inerte en condiciones normales. Diluye el oxígeno evitando combustiones descontroladas y nutre el ciclo biológico al fijarse en el suelo.
+                </div>
+              </div>
+            </div>
+
+            <!-- Selectores interactivos de los gases -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <button onclick="selectGas('N2')" data-gas="N2" class="gas-btn active text-left p-3 rounded-xl border border-cyanNeon bg-cyanNeon/15 transition cursor-pointer">
+                <div class="font-mono text-xs text-cyanNeon font-bold">78.0%</div>
+                <div class="font-display font-bold text-white text-sm">Nitrógeno (N₂)</div>
+                <div class="text-[11px] text-slate-300 mt-0.5">Dominante</div>
+              </button>
+
+              <button onclick="selectGas('O2')" data-gas="O2" class="gas-btn text-left p-3 rounded-xl border border-slate-700 bg-panelLight/60 hover:border-bioticGreen transition cursor-pointer">
+                <div class="font-mono text-xs text-bioticGreen font-bold">21.0%</div>
+                <div class="font-display font-bold text-white text-sm">Oxígeno (O₂)</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Motor vital</div>
+              </button>
+
+              <button onclick="selectGas('AR')" data-gas="AR" class="gas-btn text-left p-3 rounded-xl border border-slate-700 bg-panelLight/60 hover:border-purple-400 transition cursor-pointer">
+                <div class="font-mono text-xs text-purple-400 font-bold">0.9%</div>
+                <div class="font-display font-bold text-white text-sm">Argón (Ar)</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Gas noble inerte</div>
+              </button>
+
+              <button onclick="selectGas('TRACE')" data-gas="TRACE" class="gas-btn text-left p-3 rounded-xl border border-slate-700 bg-panelLight/60 hover:border-thermalOrange transition cursor-pointer">
+                <div class="font-mono text-xs text-thermalOrange font-bold">~0.1% Crítico</div>
+                <div class="font-display font-bold text-white text-sm">CO₂ & H₂O</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Termorreguladores</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 2. MÓDULO 2: VIAJE VERTICAL — LAS 5 CAPAS & FÁBRICA DE OZONO (4-9)    -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod2" data-index="2" data-alt="0 → 10.000 km" data-era="Estructura Vertical" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-cyanNeon uppercase tracking-widest">Módulo 02 // Ascenso Estratosférico y Orbital</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">Viaje Vertical: Las 5 Capas de la Atmósfera</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            Selecciona una capa o pilota el elevador atmosférico para observar los fenómenos físicos a cada altitud.
+          </p>
+        </div>
+
+        <!-- Elevador Interactivo de las 5 Capas -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Selector Vertical de Capas (Columna Izquierda) -->
+          <div class="lg:col-span-4 flex flex-col gap-2.5">
+            <button onclick="selectLayer('exosphere')" data-layer="exosphere" class="layer-tab text-left p-4 rounded-xl border border-slate-700/80 bg-panel hover:border-cyanNeon transition cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="font-display font-bold text-white text-base">5. EXOSFERA</span>
+                <span class="font-mono text-xs text-slate-400">700 – 10.000 km</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Límite difuso hacia el vacío • Hidrógeno y Helio</p>
+            </button>
+
+            <button onclick="selectLayer('thermosphere')" data-layer="thermosphere" class="layer-tab text-left p-4 rounded-xl border border-slate-700/80 bg-panel hover:border-thermalOrange transition cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="font-display font-bold text-white text-base">4. TERMOSFERA</span>
+                <span class="font-mono text-xs text-thermalOrange">80 – 700 km</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Calor extremo (2.482 °C) • Órbita ISS y Auroras</p>
+            </button>
+
+            <button onclick="selectLayer('mesosphere')" data-layer="mesosphere" class="layer-tab text-left p-4 rounded-xl border border-slate-700/80 bg-panel hover:border-amber-400 transition cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="font-display font-bold text-white text-base">3. MESOSFERA</span>
+                <span class="font-mono text-xs text-amber-400">50 – 80 km</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Incinerador de meteoritos • Ablación atmosférica</p>
+            </button>
+
+            <button onclick="selectLayer('stratosphere')" data-layer="stratosphere" class="layer-tab text-left p-4 rounded-xl border border-slate-700/80 bg-panel hover:border-bioticGreen transition cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="font-display font-bold text-white text-base">2. ESTRATOSFERA</span>
+                <span class="font-mono text-xs text-bioticGreen">12/20 – 50 km</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Escudo térmico estratificado • Ozonosfera (O₃)</p>
+            </button>
+
+            <button onclick="selectLayer('troposphere')" data-layer="troposphere" class="layer-tab active text-left p-4 rounded-xl border-2 border-cyanNeon bg-cyanNeon/15 transition cursor-pointer">
+              <div class="flex justify-between items-center">
+                <span class="font-display font-bold text-white text-base">1. TROPOSFERA</span>
+                <span class="font-mono text-xs text-cyanNeon">0 – 12/20 km</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">75% de masa gaseosa • Clima, vida y vuelos</p>
+            </button>
+          </div>
+
+          <!-- Visor Interactivo de Capa (Columna Derecha) -->
+          <div class="lg:col-span-8 hud-card rounded-2xl p-6 flex flex-col justify-between gap-5">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span id="layerAltitudeBadge" class="px-2.5 py-0.5 rounded bg-cyanNeon/15 text-cyanNeon border border-cyanNeon/40 font-mono text-xs font-bold">0 – 12/20 km</span>
+                  <span id="layerPauseBadge" class="px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-xs">Límite Superior: Tropopausa</span>
+                </div>
+                <h3 id="layerTitle" class="font-display text-2xl sm:text-3xl font-bold text-white mt-2">Troposfera: La Capa del Cambio y la Vida</h3>
+              </div>
+              <button id="layerActionBtn" onclick="triggerLayerSpecialEvent()" class="px-4 py-2 rounded-xl bg-cyanNeon text-space font-mono text-xs font-bold hover:brightness-110 transition cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                ⚡ Activar Tormenta y Ciclos
+              </button>
+            </div>
+
+            <!-- Canvas animado específico de cada capa -->
+            <div class="relative rounded-xl overflow-hidden border border-cyanNeon/25 bg-[#040914] h-64 sm:h-72">
+              <canvas id="layerCanvas" class="w-full h-full block"></canvas>
+              <div id="layerTelemetryOverlay" class="absolute top-3 right-3 bg-space/85 backdrop-blur-md border border-slate-700 rounded-lg px-3 py-2 font-mono text-[11px] text-slate-300 space-y-1">
+                <div>Temp: <span id="layerTempMetric" class="text-cyanNeon font-bold">+15 °C → -56 °C</span></div>
+                <div>Densidad: <span id="layerDensityMetric" class="text-bioticGreen font-bold">Máxima (75% masa)</span></div>
+              </div>
+            </div>
+
+            <!-- 3 Tarjetas de características clave de la capa seleccionada -->
+            <div id="layerCardsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-panelLight/80 border border-slate-700/70">
+                <h4 class="font-display font-bold text-cyanNeon text-sm">Densidad Extrema</h4>
+                <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">Contiene tres cuartas partes (75%) de toda la masa de gases de la atmósfera por atracción gravitatoria.</p>
+              </div>
+              <div class="p-4 rounded-xl bg-panelLight/80 border border-slate-700/70">
+                <h4 class="font-display font-bold text-cyanNeon text-sm">Dinámica (Tropos = Cambio)</h4>
+                <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">Aquí ocurren los fenómenos meteorológicos y los vuelos comerciales. Más ancha en el ecuador que en los polos.</p>
+              </div>
+              <div class="p-4 rounded-xl bg-panelLight/80 border border-slate-700/70">
+                <h4 class="font-display font-bold text-cyanNeon text-sm">Ciclos Vitales</h4>
+                <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">Escenario activo de los ciclos biogeoquímicos fundamentales: agua (H₂O), oxígeno (O₂), carbono (CO₂) y nitrógeno (N₂).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-SECCIÓN DESTACADA: LA FÁBRICA MOLECULAR DE OZONO (SLIDE 6) -->
+        <div class="hud-card rounded-2xl p-6 sm:p-8 border-bioticGreen/30">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <span class="font-mono text-xs text-bioticGreen uppercase tracking-widest">Reacción Fotoquímica Estratosférica</span>
+              <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">La Fábrica Molecular de Ozono (O₃)</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="setOzoneStep(1)" class="ozone-step-btn active px-3 py-1.5 rounded-lg font-mono text-xs border border-bioticGreen bg-bioticGreen text-space font-bold cursor-pointer">1. Impacto UV</button>
+              <button onclick="setOzoneStep(2)" class="ozone-step-btn px-3 py-1.5 rounded-lg font-mono text-xs border border-slate-700 bg-panelLight text-slate-300 hover:border-bioticGreen cursor-pointer">2. Disociación</button>
+              <button onclick="setOzoneStep(3)" class="ozone-step-btn px-3 py-1.5 rounded-lg font-mono text-xs border border-slate-700 bg-panelLight text-slate-300 hover:border-bioticGreen cursor-pointer">3. Fusión</button>
+              <button onclick="setOzoneStep(4)" class="ozone-step-btn px-3 py-1.5 rounded-lg font-mono text-xs border border-slate-700 bg-panelLight text-slate-300 hover:border-bioticGreen cursor-pointer">4. El Escudo O₃</button>
+              <button id="playOzoneCycleBtn" onclick="playFullOzoneCycle()" class="px-4 py-1.5 rounded-lg font-mono text-xs bg-cyanNeon/20 text-cyanNeon border border-cyanNeon/50 hover:bg-cyanNeon hover:text-space transition font-bold cursor-pointer">
+                ▶ Animar Reacción
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-6">
+            <!-- Canvas molecular del ciclo de Chapman (Ozono) -->
+            <div class="lg:col-span-7 relative rounded-xl overflow-hidden border border-bioticGreen/25 bg-[#040914] h-64">
+              <canvas id="ozoneCanvas" class="w-full h-full block"></canvas>
+              <div class="absolute bottom-3 left-3 px-3 py-1 rounded bg-space/85 border border-bioticGreen/30 font-mono text-xs text-bioticGreen" id="ozoneFormulaBanner">
+                Paso 1: O₂ + Fotón UV-C (λ &lt; 240 nm)
+              </div>
+            </div>
+
+            <!-- Pasos explicativos -->
+            <div class="lg:col-span-5 space-y-3">
+              <div id="ozone-card-1" onclick="setOzoneStep(1)" class="ozone-info-card p-3.5 rounded-xl border border-bioticGreen bg-bioticGreen/10 cursor-pointer transition">
+                <div class="font-display font-bold text-white text-sm">1. Impacto</div>
+                <p class="text-xs text-slate-300 mt-1">La radiación solar ultravioleta (UV) golpea una molécula de oxígeno diatómico (O₂).</p>
+              </div>
+              <div id="ozone-card-2" onclick="setOzoneStep(2)" class="ozone-info-card p-3.5 rounded-xl border border-slate-800 bg-panelLight/50 cursor-pointer transition">
+                <div class="font-display font-bold text-white text-sm">2. Disociación</div>
+                <p class="text-xs text-slate-300 mt-1">La energía rompe el enlace covalente, dividiendo el O₂ en dos átomos de oxígeno atómico (O + O) altamente reactivos.</p>
+              </div>
+              <div id="ozone-card-3" onclick="setOzoneStep(3)" class="ozone-info-card p-3.5 rounded-xl border border-slate-800 bg-panelLight/50 cursor-pointer transition">
+                <div class="font-display font-bold text-white text-sm">3. Fusión</div>
+                <p class="text-xs text-slate-300 mt-1">Un átomo de oxígeno libre (O) choca y se une con una molécula de oxígeno intacta (O₂).</p>
+              </div>
+              <div id="ozone-card-4" onclick="setOzoneStep(4)" class="ozone-info-card p-3.5 rounded-xl border border-slate-800 bg-panelLight/50 cursor-pointer transition">
+                <div class="font-display font-bold text-white text-sm">4. El Escudo</div>
+                <p class="text-xs text-slate-300 mt-1">Nace el Ozono (O₃). Este gas actúa como filtro vital, impidiendo que la radiación UV mutagénica alcance la superficie terrestre.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 3. MÓDULO 3: EL TERMÓMETRO ATMOSFÉRICO Y MATRIZ DE PERFIL (10-11)     -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod3" data-index="3" data-alt="Sonda Térmica 0–10.000 km" data-era="Perfil Térmico" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-thermalOrange uppercase tracking-widest">Módulo 03 // Perfil Térmico Vertical</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">El Termómetro Atmosférico y Matriz de Perfil</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            Desliza la sonda vertical para explorar la inversión térmica en zig-zag desde el suelo hasta el límite con el espacio.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          <!-- Gráfico Interactivo en Zig-Zag (Columna Izquierda) -->
+          <div class="lg:col-span-6 hud-card rounded-2xl p-6 flex flex-col justify-between gap-5">
+            <div class="flex items-center justify-between">
+              <h3 class="font-display text-xl font-bold text-white">Curva Térmica en Zig-Zag</h3>
+              <div class="flex items-center gap-3 text-xs font-mono">
+                <span class="text-cyanNeon">❄ Frío</span>
+                <span class="text-slate-500">↔</span>
+                <span class="text-thermalOrange">🔥 Caliente</span>
+              </div>
+            </div>
+
+            <!-- SVG Interactivo del Termómetro Atmosférico -->
+            <div class="relative bg-[#040914] rounded-xl border border-slate-800 p-4">
+              <svg id="thermoSvg" viewBox="0 0 500 380" class="w-full h-auto select-none">
+                <defs>
+                  <linearGradient id="tempLineGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ff5e3a" />
+                    <stop offset="22%" stop-color="#00f0ff" />
+                    <stop offset="45%" stop-color="#ff9e00" />
+                    <stop offset="68%" stop-color="#00f0ff" />
+                    <stop offset="88%" stop-color="#ff3b30" />
+                    <stop offset="100%" stop-color="#38bdf8" />
+                  </linearGradient>
+                  <filter id="neonGlow">
+                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Bandas horizontales de capas -->
+                <rect x="75" y="15" width="405" height="62" fill="rgba(56, 189, 248, 0.06)" />
+                <rect x="75" y="77" width="405" height="75" fill="rgba(255, 94, 58, 0.12)" />
+                <rect x="75" y="152" width="405" height="68" fill="rgba(0, 240, 255, 0.06)" />
+                <rect x="75" y="220" width="405" height="70" fill="rgba(255, 158, 0, 0.08)" />
+                <rect x="75" y="290" width="405" height="65" fill="rgba(0, 255, 157, 0.07)" />
+
+                <!-- Líneas divisorias de Pausas -->
+                <line x1="75" y1="77" x2="480" y2="77" stroke="#334155" stroke-dasharray="4 4" />
+                <line x1="75" y1="152" x2="480" y2="152" stroke="#334155" stroke-dasharray="4 4" />
+                <line x1="75" y1="220" x2="480" y2="220" stroke="#334155" stroke-dasharray="4 4" />
+                <line x1="75" y1="290" x2="480" y2="290" stroke="#334155" stroke-dasharray="4 4" />
+
+                <!-- Etiquetas Y (Capas) -->
+                <text x="68" y="48" text-anchor="end" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">EXOSFERA</text>
+                <text x="68" y="118" text-anchor="end" fill="#ff5e3a" font-family="JetBrains Mono" font-size="10">TERMOSFERA</text>
+                <text x="68" y="188" text-anchor="end" fill="#00f0ff" font-family="JetBrains Mono" font-size="10">MESOSFERA</text>
+                <text x="68" y="258" text-anchor="end" fill="#fbbf24" font-family="JetBrains Mono" font-size="10">ESTRATOSF.</text>
+                <text x="68" y="325" text-anchor="end" fill="#00ff9d" font-family="JetBrains Mono" font-size="10">TROPOSFERA</text>
+
+                <!-- Curva Zig-Zag de Temperatura -->
+                <polyline id="thermoCurve"
+                  points="230,350 130,290 265,220 110,152 435,77 465,20"
+                  fill="none" stroke="url(#tempLineGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"
+                  filter="url(#neonGlow)" />
+
+                <!-- Anotaciones de puntos clave -->
+                <text x="142" y="335" fill="#cbd5e1" font-family="Inter" font-size="10">Baja temp. al subir</text>
+                <text x="275" y="232" fill="#fbbf24" font-family="Inter" font-size="10">Ozono absorbe UV (+Calor)</text>
+                <text x="122" y="164" fill="#00f0ff" font-family="Inter" font-size="10">-90 °C (Mínimo térmico)</text>
+                <text x="245" y="95" fill="#ff5e3a" font-family="Inter" font-size="10">Hasta 2.482 °C (Radiación solar)</text>
+
+                <!-- Línea horizontal móvil de la Sonda -->
+                <line id="probeLine" x1="75" y1="320" x2="480" y2="320" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3" />
+                <circle id="probeDot" cx="180" cy="320" r="7" fill="#00f0ff" stroke="#050a14" stroke-width="2.5" />
+              </svg>
+            </div>
+
+            <!-- Control deslizante de la Sonda -->
+            <div class="bg-panelLight/90 p-4 rounded-xl border border-cyanNeon/25 space-y-2">
+              <div class="flex justify-between items-center font-mono text-xs">
+                <span class="text-slate-300">Altitud de Sonda: <strong id="probeAltReadout" class="text-cyanNeon text-sm">5 km (Troposfera)</strong></span>
+                <span class="text-slate-300">Temp. Estimada: <strong id="probeTempReadout" class="text-thermalOrange text-sm">-17 °C</strong></span>
+              </div>
+              <input id="probeSlider" type="range" min="0" max="100" value="10" class="w-full" />
+              <p id="probeDescReadout" class="text-xs text-slate-300 pt-1">
+                Troposfera: La temperatura desciende ~6.5 °C por cada kilómetro al alejarnos del calor irradiado por la superficie.
+              </p>
+            </div>
+          </div>
+
+          <!-- Matriz de Perfil Atmosférico (Slide 11 - Columna Derecha) -->
+          <div class="lg:col-span-6 hud-card rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <h3 class="font-display text-xl font-bold text-white">Matriz de Perfil Atmosférico</h3>
+              <p class="text-xs text-slate-400 mt-1">Haz clic en cualquier fila para posicionar la sonda térmica en esa capa</p>
+            </div>
+
+            <div class="overflow-x-auto mt-4">
+              <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr class="border-b border-cyanNeon/30 font-mono text-[11px] text-cyanNeon uppercase">
+                    <th class="py-3 px-2.5">Capa</th>
+                    <th class="py-3 px-2.5">Altitud</th>
+                    <th class="py-3 px-2.5">Comportamiento Térmico</th>
+                    <th class="py-3 px-2.5">Fenómenos Clave</th>
+                    <th class="py-3 px-2.5">Pausa Superior</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/80 text-slate-200">
+                  <tr onclick="setProbeByLayer(92)" class="matrix-row hover:bg-cyanNeon/10 cursor-pointer transition">
+                    <td class="py-3.5 px-2.5 font-display font-bold text-sky-300">Exosfera</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs">700 – 10.000 km</td>
+                    <td class="py-3.5 px-2.5 text-cyanNeon">Frío extremo / Dispersión</td>
+                    <td class="py-3.5 px-2.5 text-xs">Fuga de H/He al espacio, satélites órbita alta</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs text-slate-400">N/A (Vacío)</td>
+                  </tr>
+                  <tr onclick="setProbeByLayer(75)" class="matrix-row hover:bg-thermalOrange/10 cursor-pointer transition">
+                    <td class="py-3.5 px-2.5 font-display font-bold text-thermalOrange">Termosfera</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs">80 – 700 km</td>
+                    <td class="py-3.5 px-2.5 text-thermalOrange">Sube hasta 2.482 °C</td>
+                    <td class="py-3.5 px-2.5 text-xs">Estación Espacial (ISS), órbita baja, sin sonido</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs text-slate-300">Termopausa</td>
+                  </tr>
+                  <tr onclick="setProbeByLayer(55)" class="matrix-row hover:bg-cyanNeon/10 cursor-pointer transition">
+                    <td class="py-3.5 px-2.5 font-display font-bold text-cyanNeon">Mesosfera</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs">50 – 80 km</td>
+                    <td class="py-3.5 px-2.5 text-cyanNeon">Baja temp. (mínimo)</td>
+                    <td class="py-3.5 px-2.5 text-xs">Quema de meteoritos (estrellas fugaces)</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs text-slate-300">Mesopausa</td>
+                  </tr>
+                  <tr onclick="setProbeByLayer(32)" class="matrix-row hover:bg-amber-400/10 cursor-pointer transition">
+                    <td class="py-3.5 px-2.5 font-display font-bold text-amber-400">Estratosfera</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs">20 – 50 km</td>
+                    <td class="py-3.5 px-2.5 text-amber-400">Sube temp. (Inversión)</td>
+                    <td class="py-3.5 px-2.5 text-xs">Capa de Ozono (O₃), absorción radiación UV</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs text-slate-300">Estratopausa</td>
+                  </tr>
+                  <tr onclick="setProbeByLayer(10)" class="matrix-row bg-bioticGreen/10 hover:bg-bioticGreen/15 cursor-pointer transition">
+                    <td class="py-3.5 px-2.5 font-display font-bold text-bioticGreen">Troposfera</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs">0 – 20 km</td>
+                    <td class="py-3.5 px-2.5 text-cyanNeon">Baja temp. con altitud</td>
+                    <td class="py-3.5 px-2.5 text-xs">Clima, 75% masa de aire, aviación y vida</td>
+                    <td class="py-3.5 px-2.5 font-mono text-xs text-slate-300">Tropopausa</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 p-3.5 rounded-xl bg-panelLight/70 border border-slate-700/80 text-xs text-slate-300 flex items-start gap-3">
+              <span class="text-cyanNeon text-lg">ℹ</span>
+              <p>
+                <strong>Nota sobre las "Pausas":</strong> Cada límite superior (Tropopausa, Estratopausa, Mesopausa y Termopausa) marca una zona de transición donde la temperatura deja de subir o bajar antes de invertir su tendencia en la capa siguiente.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 4. MÓDULO 4: FÍSICA Y TERMODINÁMICA ATMOSFÉRICA (SLIDES 12, 13, 14)   -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod4" data-index="4" data-alt="0 – 20 km (Dinámica)" data-era="Mecánica de Fluidos" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-thermalOrange uppercase tracking-widest">Módulo 04 // Física, Presión y Calor</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">Mecánica y Termodinámica Atmosférica</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            Cómo el peso del aire, el efecto invernadero y la convección convierten a la Tierra en un planeta vivo y habitable.
+          </p>
+        </div>
+
+        <!-- Fila 1: Motor del Efecto Invernadero (Slide 12) + Presión y Vuelo (Slide 13) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- Simulador Toggle: El Motor del Efecto Invernadero (Slide 12) -->
+          <div class="lg:col-span-6 hud-card rounded-2xl p-6 flex flex-col justify-between gap-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="font-display text-xl font-bold text-white">El Motor del Efecto Invernadero</h3>
+                <p class="text-xs text-slate-400">Alterna entre un planeta desnudo y nuestro incubador atmosférico</p>
+              </div>
+              <div class="inline-flex rounded-xl p-1 bg-panelLight border border-slate-700">
+                <button id="ghNoAtmBtn" onclick="setGreenhouseMode(false)" class="px-3 py-1.5 rounded-lg font-mono text-xs text-slate-300 hover:text-white transition cursor-pointer">
+                  ❄ Sin Atmósfera
+                </button>
+                <button id="ghWithAtmBtn" onclick="setGreenhouseMode(true)" class="px-3 py-1.5 rounded-lg font-mono text-xs bg-bioticGreen text-space font-bold transition cursor-pointer">
+                  🌍 Con Atmósfera
+                </button>
+              </div>
+            </div>
+
+            <div class="relative rounded-xl overflow-hidden border border-slate-700/80 bg-[#040914] h-60">
+              <canvas id="greenhouseCanvas" class="w-full h-full block"></canvas>
+              <div class="absolute top-3 left-3 bg-space/85 backdrop-blur px-3 py-2 rounded-xl border border-slate-700">
+                <div class="text-[11px] font-mono text-slate-400">Temperatura Media Global</div>
+                <div id="ghTempDisplay" class="font-display text-2xl font-bold text-bioticGreen">+15 °C (El Incubador)</div>
+              </div>
+            </div>
+
+            <p id="ghExplanation" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-panelLight/70 p-4 rounded-xl border border-bioticGreen/25">
+              <strong class="text-bioticGreen">Con Atmósfera (El Incubador +15 °C):</strong> Los gases permiten el ingreso de la radiación solar visible para la fotosíntesis. El calor infrarrojo (onda larga) emitido por la superficie rebota en el dosel de gases de efecto invernadero y es parcialmente retenido.
+            </p>
+          </div>
+
+          <!-- Presión Atmosférica y Sustentación Aerodinámica (Slide 13) -->
+          <div class="lg:col-span-6 hud-card rounded-2xl p-6 flex flex-col justify-between gap-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-display text-xl font-bold text-white">Presión y Densidad: Física de Fluidos</h3>
+                <p class="text-xs text-slate-400">El peso del aire y la sustentación aerodinámica</p>
+              </div>
+              <span class="font-mono text-xs text-cyanNeon bg-cyanNeon/10 px-2.5 py-1 rounded border border-cyanNeon/30">1013.25 hPa</span>
+            </div>
+
+            <!-- Canvas de columna de presión sobre océano + perfil alar con flujo molecular -->
+            <div class="relative rounded-xl overflow-hidden border border-slate-700/80 bg-[#040914] h-60">
+              <canvas id="aeroCanvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="p-3.5 rounded-xl bg-panelLight/80 border border-cyanNeon/25">
+                <h4 class="font-display font-bold text-cyanNeon">Presión Atmosférica</h4>
+                <p class="text-slate-300 mt-1 leading-relaxed">Es el "peso del aire" empujado por la gravedad. Esta presión exacta es el requisito físico para que exista agua líquida estable en la Tierra.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-panelLight/80 border border-thermalOrange/25">
+                <h4 class="font-display font-bold text-thermalOrange">Soporte de Vuelo</h4>
+                <p class="text-slate-300 mt-1 leading-relaxed">La alta densidad molecular en la troposfera genera fricción y sustentación, permitiendo el vuelo de aves, insectos y aeronaves.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila 2: La Máquina Termodinámica (Ciclo Convectivo en 5 Pasos - Slide 14) -->
+        <div class="hud-card rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <span class="font-mono text-xs text-cyanNeon uppercase tracking-widest">Circulación Global de Energía</span>
+              <h3 class="font-display text-2xl font-bold text-white mt-1">La Máquina Termodinámica (Ciclo en 5 Pasos)</h3>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="highlightThermoStep(1)" class="thermo-step-pill active px-3 py-1 rounded-lg font-mono text-xs bg-thermalOrange text-white font-bold cursor-pointer">1. Calentamiento</button>
+              <button onclick="highlightThermoStep(2)" class="thermo-step-pill px-3 py-1 rounded-lg font-mono text-xs bg-panelLight text-slate-300 border border-slate-700 cursor-pointer">2. Expansión</button>
+              <button onclick="highlightThermoStep(3)" class="thermo-step-pill px-3 py-1 rounded-lg font-mono text-xs bg-panelLight text-slate-300 border border-slate-700 cursor-pointer">3. Ascenso</button>
+              <button onclick="highlightThermoStep(4)" class="thermo-step-pill px-3 py-1 rounded-lg font-mono text-xs bg-panelLight text-slate-300 border border-slate-700 cursor-pointer">4. Viento</button>
+              <button onclick="highlightThermoStep(5)" class="thermo-step-pill px-3 py-1 rounded-lg font-mono text-xs bg-panelLight text-slate-300 border border-slate-700 cursor-pointer">5. Lluvia</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-6">
+            <div class="lg:col-span-7 relative rounded-xl overflow-hidden border border-slate-700/80 bg-[#040914] h-64">
+              <canvas id="convectionCanvas" class="w-full h-full block"></canvas>
+            </div>
+            <div class="lg:col-span-5 grid grid-cols-1 gap-2.5 text-xs">
+              <div id="tstep-1" onclick="highlightThermoStep(1)" class="p-3 rounded-xl border border-thermalOrange bg-thermalOrange/15 cursor-pointer transition">
+                <strong class="text-thermalOrange font-display">1. Calentamiento:</strong> Oxígeno, CO₂ y vapor de agua absorben radiación térmica.
+              </div>
+              <div id="tstep-2" onclick="highlightThermoStep(2)" class="p-3 rounded-xl border border-slate-800 bg-panelLight/60 cursor-pointer transition">
+                <strong class="text-amber-400 font-display">2. Expansión:</strong> Las moléculas vibran más rápido y se alejan, disminuyendo su densidad (aire ligero).
+              </div>
+              <div id="tstep-3" onclick="highlightThermoStep(3)" class="p-3 rounded-xl border border-slate-800 bg-panelLight/60 cursor-pointer transition">
+                <strong class="text-cyanNeon font-display">3. Ascenso y Vacío:</strong> El aire caliente sube por flotabilidad, dejando una zona de baja presión térmica.
+              </div>
+              <div id="tstep-4" onclick="highlightThermoStep(4)" class="p-3 rounded-xl border border-slate-800 bg-panelLight/60 cursor-pointer transition">
+                <strong class="text-sky-300 font-display">4. Viento:</strong> Masas de aire frío más denso fluyen horizontalmente para llenar el vacío, creando los vientos.
+              </div>
+              <div id="tstep-5" onclick="highlightThermoStep(5)" class="p-3 rounded-xl border border-slate-800 bg-panelLight/60 cursor-pointer transition">
+                <strong class="text-bioticGreen font-display">5. Corrientes y Lluvia:</strong> Los vientos impulsan corrientes marinas y elevan vapor de agua que al enfriarse condensa en lluvia.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 5. MÓDULO 5: EVOLUCIÓN EN 4.500 MILLONES DE AÑOS (SLIDES 15 A 19)     -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod5" data-index="5" data-alt="Evolución Planetaria" data-era="4.500 M.a. → Hoy" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-bioticGreen uppercase tracking-widest">Módulo 05 // Viaje en el Tiempo Geológico</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">Evolución Atmosférica en 4.500 Millones de Años</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            Viaja a través de las 4 eras geológicas que transformaron un infierno volcánico sin oxígeno en nuestro escudo vital.
+          </p>
+        </div>
+
+        <!-- Selector de Línea de Tiempo Interactiva -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <button onclick="selectEra('genesis')" data-era="genesis" class="era-btn active text-left p-4 rounded-xl border-2 border-thermalOrange bg-thermalOrange/15 transition cursor-pointer">
+            <div class="font-mono text-xs text-thermalOrange font-bold">Hace 4.500 M.a.</div>
+            <div class="font-display font-bold text-white text-base mt-0.5">Génesis: Proto-Tierra</div>
+            <div class="text-[11px] text-slate-300 mt-1">Agregación y fuga primordial</div>
+          </button>
+
+          <button onclick="selectEra('phase1')" data-era="phase1" class="era-btn text-left p-4 rounded-xl border border-slate-700 bg-panel hover:border-amber-500 transition cursor-pointer">
+            <div class="font-mono text-xs text-amber-400 font-bold">Hace 4.450 M.a.</div>
+            <div class="font-display font-bold text-white text-base mt-0.5">Fase I: Primigenia</div>
+            <div class="text-[11px] text-slate-400 mt-1">Impacto lunar y vulcanismo</div>
+          </button>
+
+          <button onclick="selectEra('phase2')" data-era="phase2" class="era-btn text-left p-4 rounded-xl border border-slate-700 bg-panel hover:border-cyanNeon transition cursor-pointer">
+            <div class="font-mono text-xs text-cyanNeon font-bold">Hace 4.000 M.a.</div>
+            <div class="font-display font-bold text-white text-base mt-0.5">Fase II: Secundaria</div>
+            <div class="text-[11px] text-slate-400 mt-1">Bombardeo y metanógenas</div>
+          </button>
+
+          <button onclick="selectEra('phase3')" data-era="phase3" class="era-btn text-left p-4 rounded-xl border border-slate-700 bg-panel hover:border-bioticGreen transition cursor-pointer">
+            <div class="font-mono text-xs text-bioticGreen font-bold">3.100 – 2.400 M.a.</div>
+            <div class="font-display font-bold text-white text-base mt-0.5">Fase III: Oxidación</div>
+            <div class="text-[11px] text-slate-400 mt-1">Cianobacterias y Ozono O₃</div>
+          </button>
+        </div>
+
+        <!-- Visor Dinámico de la Era Seleccionada -->
+        <div class="hud-card rounded-2xl p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 relative rounded-xl overflow-hidden border border-slate-700/80 bg-[#040914] h-72 sm:h-80">
+            <canvas id="evolutionCanvas" class="w-full h-full block"></canvas>
+            <div class="absolute top-3 left-3 bg-space/85 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700 font-mono text-xs">
+              <span id="eraBadgeText" class="text-thermalOrange font-bold">HACE 4.500 MILLONES DE AÑOS</span>
+            </div>
+            <div class="absolute bottom-3 left-3 right-3 bg-space/85 backdrop-blur px-3 py-2 rounded-lg border border-slate-800 flex flex-wrap justify-between gap-2 text-[11px] font-mono">
+              <span>Química: <strong id="eraChemText" class="text-thermalOrange">H₂ / He (Fuga espacial)</strong></span>
+              <span>Oxígeno Libre: <strong id="eraO2Text" class="text-slate-300">0.0%</strong></span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-4">
+            <h3 id="eraTitle" class="font-display text-2xl sm:text-3xl font-bold text-white">Génesis: La Proto-Tierra y la Pérdida de Gases</h3>
+            <div id="eraCardsContainer" class="space-y-3 text-xs sm:text-sm">
+              <div class="p-3.5 rounded-xl bg-panelLight/80 border-l-4 border-thermalOrange">
+                <strong class="text-thermalOrange font-display">Agregación:</strong> Formación por colisión violenta de pequeños planetesimales ricos en óxidos, metales y silicatos.
+              </div>
+              <div class="p-3.5 rounded-xl bg-panelLight/80 border-l-4 border-amber-400">
+                <strong class="text-amber-400 font-display">Diferenciación:</strong> Los elementos pesados (hierro/níquel) se hunden para formar el núcleo magnético; los silicatos forman el manto.
+              </div>
+              <div class="p-3.5 rounded-xl bg-panelLight/80 border-l-4 border-cyanNeon">
+                <strong class="text-cyanNeon font-display">Fuga Primordial:</strong> La gravedad de esta Tierra temprana y las altas temperaturas hicieron que el hidrógeno ligero y gases primarios escaparan al espacio profundo.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matriz Comparativa de Evolución Atmosférica (Slide 19) -->
+        <div class="hud-card rounded-2xl p-6">
+          <h3 class="font-display text-xl font-bold text-white mb-4">Matriz de Evolución Atmosférica</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-bioticGreen/30 font-mono text-[11px] text-bioticGreen uppercase">
+                  <th class="py-3 px-3">Atmósfera</th>
+                  <th class="py-3 px-3">Antigüedad</th>
+                  <th class="py-3 px-3">Composición Dominante</th>
+                  <th class="py-3 px-3">Evento Detonante</th>
+                  <th class="py-3 px-3">Hito Clave</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/80 text-slate-200">
+                <tr onclick="selectEra('phase1')" class="hover:bg-amber-500/10 cursor-pointer transition">
+                  <td class="py-3.5 px-3 font-display font-bold text-amber-400">Primigenia</td>
+                  <td class="py-3.5 px-3 font-mono text-xs">4.450 Millones de años</td>
+                  <td class="py-3.5 px-3 text-xs">Fuertemente reductora (H₂, CO₂, Vapor H₂O, N₂)</td>
+                  <td class="py-3.5 px-3 text-xs">Vulcanismo extremo e impacto lunar</td>
+                  <td class="py-3.5 px-3 text-xs">Diferenciación del núcleo planetario</td>
+                </tr>
+                <tr onclick="selectEra('phase2')" class="hover:bg-cyanNeon/10 cursor-pointer transition">
+                  <td class="py-3.5 px-3 font-display font-bold text-cyanNeon">Secundaria</td>
+                  <td class="py-3.5 px-3 font-mono text-xs">4.000 Millones de años</td>
+                  <td class="py-3.5 px-3 text-xs">Reductora débil (Metano CH₄, Amoníaco, N₂, CO₂)</td>
+                  <td class="py-3.5 px-3 text-xs">Gran Bombardeo de cometas y meteoritos</td>
+                  <td class="py-3.5 px-3 text-xs">Aparición de protobacterias metanógenas</td>
+                </tr>
+                <tr onclick="selectEra('phase3')" class="hover:bg-bioticGreen/10 cursor-pointer transition">
+                  <td class="py-3.5 px-3 font-display font-bold text-bioticGreen">Biótica / Actual</td>
+                  <td class="py-3.5 px-3 font-mono text-xs">3.100 M.a. – Actualidad</td>
+                  <td class="py-3.5 px-3 text-xs">Oxidante (78% N₂, 21% O₂, 0.9% Ar, 0.1% Traza)</td>
+                  <td class="py-3.5 px-3 text-xs">Fotosíntesis oxigénica de cianobacterias</td>
+                  <td class="py-3.5 px-3 text-xs">Gran Evento Oxidativo y creación del Ozono (O₃)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 6. MÓDULO 6: EL SISTEMA DE SOPORTE VITAL CO-CREADO Y QUIZ (SLIDE 20)  -->
+    <!-- ===================================================================== -->
+    <section id="sec-mod6" data-index="6" data-alt="Sistema Co-Creado" data-era="Presente y Futuro" class="slide-section py-20 px-4 border-t border-cyanNeon/15">
+      <div class="max-w-7xl mx-auto w-full space-y-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <span class="font-mono text-xs text-bioticGreen uppercase tracking-widest">Módulo 06 // Síntesis Biogeoquímica</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-1">El Sistema de Soporte Vital Co-Creado</h2>
+          </div>
+          <p class="text-slate-400 text-sm max-w-md">
+            "No es un contenedor estático: la atmósfera es una maquinaria biogeoquímica viva. El planeta respira a sí mismo."
+          </p>
+        </div>
+
+        <!-- Diagrama Interactivo de Retroalimentación Co-creada (Slide 20) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Diagrama SVG Animado del Bucle Vida <-> Escudo -->
+          <div class="lg:col-span-7 hud-card rounded-2xl p-6">
+            <h3 class="font-display text-lg font-bold text-white mb-3">Bucle de Retroalimentación: La Vida Construye su Propio Escudo</h3>
+            <div class="bg-[#040914] rounded-xl border border-slate-800 p-3">
+              <svg viewBox="0 0 600 340" class="w-full h-auto">
+                <!-- Capas concéntricas planetarias -->
+                <path d="M 50 320 Q 300 10 550 320" fill="none" stroke="rgba(255,94,58,0.35)" stroke-width="18" />
+                <text x="300" y="38" text-anchor="middle" fill="#ff9e00" font-family="JetBrains Mono" font-size="11">MESOSFERA: Incinera amenazas físicas (meteoros)</text>
+
+                <path d="M 85 320 Q 300 75 515 320" fill="none" stroke="rgba(0,240,255,0.35)" stroke-width="18" />
+                <text x="300" y="102" text-anchor="middle" fill="#00f0ff" font-family="JetBrains Mono" font-size="11">ESTRATOSFERA: Escudo de Ozono (O₃) filtra UV</text>
+
+                <path d="M 125 320 Q 300 145 475 320" fill="none" stroke="rgba(0,255,157,0.2)" stroke-width="18" />
+                <text x="300" y="168" text-anchor="middle" fill="#00ff9d" font-family="JetBrains Mono" font-size="11">TROPOSFERA: Sostiene densidad, agua y clima</text>
+
+                <!-- Superficie / Biosfera -->
+                <path d="M 165 320 Q 300 225 435 320 Z" fill="rgba(16, 185, 129, 0.25)" stroke="#00ff9d" stroke-width="2" />
+                <text x="300" y="295" text-anchor="middle" fill="#ffffff" font-family="Space Grotesk" font-weight="bold" font-size="13">BIOSFERA & CIANOBACTERIAS</text>
+
+                <!-- Flecha ascendente: Producción Biológica O2 -->
+                <path d="M 210 275 C 180 210, 195 145, 240 112" fill="none" stroke="#00ff9d" stroke-width="3" class="animate-flow" />
+                <rect x="105" y="185" width="125" height="34" rx="6" fill="#050a14" stroke="#00ff9d" />
+                <text x="167" y="200" text-anchor="middle" fill="#00ff9d" font-family="JetBrains Mono" font-size="9" font-weight="bold">Producción O₂</text>
+                <text x="167" y="212" text-anchor="middle" fill="#cbd5e1" font-family="Inter" font-size="8">Fotosíntesis marina</text>
+
+                <!-- Rayos UV bloqueados -->
+                <line x1="470" y1="20" x2="385" y2="115" stroke="#ff5e3a" stroke-width="3" stroke-dasharray="6 4" />
+                <circle cx="385" cy="115" r="9" fill="#00f0ff" opacity="0.8" />
+                <text x="485" y="55" fill="#ff5e3a" font-family="JetBrains Mono" font-size="10" font-weight="bold">Radiación UV</text>
+                <text x="485" y="68" fill="#00f0ff" font-family="Inter" font-size="9">Bloqueada por O₃</text>
+
+                <!-- Flecha descendente: Energía Filtrada -->
+                <path d="M 365 120 C 405 160, 410 220, 375 270" fill="none" stroke="#00f0ff" stroke-width="3" class="animate-flow" />
+                <rect x="375" y="185" width="130" height="34" rx="6" fill="#050a14" stroke="#00f0ff" />
+                <text x="440" y="200" text-anchor="middle" fill="#00f0ff" font-family="JetBrains Mono" font-size="9" font-weight="bold">Energía Filtrada</text>
+                <text x="440" y="212" text-anchor="middle" fill="#cbd5e1" font-family="Inter" font-size="8">Permite vida compleja</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Pilares conceptuales finales -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="hud-card rounded-2xl p-5 border-l-4 border-bioticGreen">
+              <h4 class="font-display text-lg font-bold text-bioticGreen">La Paradoja de la Vida</h4>
+              <p class="text-sm text-slate-300 mt-1.5 leading-relaxed">
+                La vida primitiva (cianobacterias) construyó activamente con su "desecho" metabólico (O₂) el escudo de ozono estratosférico que hoy protege el ADN de toda la vida compleja en tierra firme.
+              </p>
+            </div>
+
+            <div class="hud-card rounded-2xl p-5 border-l-4 border-cyanNeon">
+              <h4 class="font-display text-lg font-bold text-cyanNeon">Especialización Funcional</h4>
+              <p class="text-sm text-slate-300 mt-1.5 leading-relaxed">
+                El sistema planetario se dividió el trabajo: la <strong>Troposfera</strong> sostiene la densidad y el clima, la <strong>Estratosfera</strong> blinda contra la radiación UV, y la <strong>Mesosfera</strong> incinera las amenazas físicas del espacio.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-cyanNeon/15 via-bioticGreen/15 to-transparent border border-bioticGreen/40 text-center">
+              <p class="font-display text-lg font-bold text-white tracking-wide">
+                "El planeta respira a sí mismo."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MINI-EVALUACIÓN DIDÁCTICA INTERACTIVA (5 PREGUNTAS CLAVE) -->
+        <div class="hud-card rounded-2xl p-6 sm:p-8 border-cyanNeon/35">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div>
+              <span class="font-mono text-xs text-cyanNeon uppercase tracking-widest">Consolida tu Aprendizaje</span>
+              <h3 class="font-display text-2xl font-bold text-white mt-1">Simulador de Verificación Científica (5 Preguntas)</h3>
+            </div>
+            <div class="font-mono text-sm bg-panelLight px-4 py-2 rounded-xl border border-cyanNeon/30">
+              Puntuación: <span id="quizScore" class="text-bioticGreen font-bold">0</span> / 5
+            </div>
+          </div>
+
+          <div id="quizContainer" class="mt-6 space-y-6">
+            <!-- Renderizado dinámico por JS -->
+          </div>
+
+          <div class="mt-6 flex justify-end">
+            <button onclick="resetQuiz()" class="px-5 py-2.5 rounded-xl bg-panelLight border border-cyanNeon/40 text-cyanNeon font-mono text-xs hover:bg-cyanNeon hover:text-space transition cursor-pointer">
+              ↻ Reiniciar Evaluación
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="border-t border-slate-800/90 bg-[#03070e] py-8 px-4 text-center text-xs text-slate-500 font-mono">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>EL ESCUDO INVISIBLE // PRESENTACIÓN CIENTÍFICA INTERACTIVA</span>
+      <span>ANATOMÍA, MECÁNICA Y EVOLUCIÓN DE LA ATMÓSFERA TERRESTRE (0 – 10.000 KM)</span>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- MOTOR DE SIMULACIONES, ANIMACIONES GSAP Y LÓGICA INTERACTIVA          -->
+  <!-- ===================================================================== -->
+  <script>
+    // =========================================================================
+    // 1. GESTIÓN DE NAVEGACIÓN, MODO PRESENTACIÓN Y TELEMETRÍA GLOBAL
+    // =========================================================================
+    gsap.registerPlugin(ScrollTrigger);
+
+    let isPresentationMode = false;
+    let currentSlideIndex = 0;
+    const sections = Array.from(document.querySelectorAll('.slide-section'));
+    const navDots = Array.from(document.querySelectorAll('.nav-dot'));
+
+    function updateTelemetryHUD(index) {
+      currentSlideIndex = index;
+      const sec = sections[index];
+      if (!sec) return;
+
+      document.getElementById('hudAltitude').textContent = sec.dataset.alt || '0 km';
+      document.getElementById('hudEra').textContent = sec.dataset.era || 'Actualidad';
+      document.getElementById('slideCounter').textContent = `0${index + 1} / 0${sections.length}`;
+
+      document.getElementById('prevSlideBtn').disabled = index === 0;
+      document.getElementById('nextSlideBtn').disabled = index === sections.length - 1;
+
+      navDots.forEach((dot, idx) => {
+        const circle = dot.querySelector('span:last-child');
+        if (idx === index) {
+          circle.classList.remove('border-slate-500', 'bg-transparent');
+          circle.classList.add('border-cyanNeon', 'bg-cyanNeon', 'shadow-[0_0_10px_#00f0ff]');
+        } else {
+          circle.classList.add('border-slate-500', 'bg-transparent');
+          circle.classList.remove('border-cyanNeon', 'bg-cyanNeon', 'shadow-[0_0_10px_#00f0ff]');
+        }
+      });
+    }
+
+    function navigateToSection(targetId) {
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+      const idx = parseInt(targetEl.dataset.index, 10);
+
+      if (isPresentationMode) {
+        sections.forEach(s => s.classList.remove('active-slide'));
+        targetEl.classList.add('active-slide');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        updateTelemetryHUD(idx);
+        resizeAllCanvases();
+      } else {
+        targetEl.scrollIntoView({ behavior: 'smooth' });
+        updateTelemetryHUD(idx);
+      }
+    }
+
+    function enableGuidedMode() {
+      isPresentationMode = true;
+      document.body.classList.add('presentation-mode');
+      document.getElementById('modeLabel').textContent = 'Modo: Presentación Guiada';
+      sections.forEach((s, i) => {
+        s.classList.toggle('active-slide', i === currentSlideIndex);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      resizeAllCanvases();
+    }
+
+    document.getElementById('toggleModeBtn').addEventListener('click', () => {
+      isPresentationMode = !isPresentationMode;
+      if (isPresentationMode) {
+        enableGuidedMode();
+      } else {
+        document.body.classList.remove('presentation-mode');
+        document.getElementById('modeLabel').textContent = 'Modo: Exploración Libre';
+        sections.forEach(s => s.classList.remove('active-slide'));
+        resizeAllCanvases();
+        sections[currentSlideIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    document.getElementById('prevSlideBtn').addEventListener('click', () => {
+      if (currentSlideIndex > 0) {
+        navigateToSection(sections[currentSlideIndex - 1].id);
+      }
+    });
+
+    document.getElementById('nextSlideBtn').addEventListener('click', () => {
+      if (currentSlideIndex < sections.length - 1) {
+        navigateToSection(sections[currentSlideIndex + 1].id);
+      }
+    });
+
+    navDots.forEach(dot => {
+      dot.addEventListener('click', () => navigateToSection(dot.dataset.target));
+    });
+
+    // Observador de scroll en modo exploración libre
+    sections.forEach((sec, idx) => {
+      ScrollTrigger.create({
+        trigger: sec,
+        start: 'top 45%',
+        end: 'bottom 45%',
+        onEnter: () => { if (!isPresentationMode) updateTelemetryHUD(idx); },
+        onEnterBack: () => { if (!isPresentationMode) updateTelemetryHUD(idx); }
+      });
+    });
+
+    // =========================================================================
+    // 2. CANVAS DE PORTADA: HORIZONTE TERRESTRE Y HALO ATMOSFÉRICO (SLIDE 1)
+    // =========================================================================
+    const heroCanvas = document.getElementById('heroCanvas');
+    const heroCtx = heroCanvas.getContext('2d');
+    let heroStars = [];
+    let heroParticles = [];
+
+    function initHeroScene() {
+      const w = heroCanvas.width = heroCanvas.offsetWidth;
+      const h = heroCanvas.height = heroCanvas.offsetHeight;
+      heroStars = Array.from({ length: 130 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h * 0.78,
+        r: Math.random() * 1.6 + 0.3,
+        alpha: Math.random() * 0.8 + 0.2,
+        speed: Math.random() * 0.015 + 0.005
+      }));
+      heroParticles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * w,
+        y: h * 0.45 + Math.random() * h * 0.45,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -Math.random() * 0.35 - 0.1,
+        r: Math.random() * 2.5 + 1,
+        color: Math.random() > 0.3 ? '#00f0ff' : '#00ff9d'
+      }));
+    }
+
+    function drawHeroScene(time) {
+      const w = heroCanvas.width;
+      const h = heroCanvas.height;
+      heroCtx.clearRect(0, 0, w, h);
+
+      // Estrellas titilantes
+      heroStars.forEach(s => {
+        const flicker = 0.6 + 0.4 * Math.sin(time * 0.002 + s.x);
+        heroCtx.fillStyle = `rgba(226, 232, 240, ${s.alpha * flicker})`;
+        heroCtx.beginPath();
+        heroCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        heroCtx.fill();
+      });
+
+      // Curvatura terrestre y halo atmosférico brillante
+      const earthRadius = Math.max(w * 1.15, 900);
+      const centerX = w / 2;
+      const centerY = h + earthRadius - h * 0.22;
+
+      // Halo exterior difuso (Exosfera - Troposfera)
+      const atmoGrad = heroCtx.createRadialGradient(
+        centerX, centerY, earthRadius - 10,
+        centerX, centerY, earthRadius + 145
+      );
+      atmoGrad.addColorStop(0, 'rgba(0, 240, 255, 0.85)');
+      atmoGrad.addColorStop(0.25, 'rgba(14, 165, 233, 0.42)');
+      atmoGrad.addColorStop(0.6, 'rgba(0, 255, 157, 0.12)');
+      atmoGrad.addColorStop(1, 'rgba(5, 10, 20, 0)');
+
+      heroCtx.fillStyle = atmoGrad;
+      heroCtx.beginPath();
+      heroCtx.arc(centerX, centerY, earthRadius + 145, Math.PI, Math.PI * 2);
+      heroCtx.fill();
+
+      // Globo terrestre oscuro con brillo de borde
+      const planetGrad = heroCtx.createRadialGradient(
+        centerX, centerY - earthRadius + 40, 10,
+        centerX, centerY, earthRadius
+      );
+      planetGrad.addColorStop(0, '#0c2748');
+      planetGrad.addColorStop(0.4, '#061326');
+      planetGrad.addColorStop(1, '#02060d');
+
+      heroCtx.fillStyle = planetGrad;
+      heroCtx.beginPath();
+      heroCtx.arc(centerX, centerY, earthRadius, Math.PI, Math.PI * 2);
+      heroCtx.fill();
+
+      heroCtx.strokeStyle = 'rgba(0, 240, 255, 0.9)';
+      heroCtx.lineWidth = 2.5;
+      heroCtx.beginPath();
+      heroCtx.arc(centerX, centerY, earthRadius, Math.PI, Math.PI * 2);
+      heroCtx.stroke();
+
+      // Partículas atmosféricas ascendentes
+      heroParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < h * 0.35) {
+          p.y = h * 0.88;
+          p.x = Math.random() * w;
+        }
+        heroCtx.fillStyle = p.color;
+        heroCtx.globalAlpha = 0.55;
+        heroCtx.beginPath();
+        heroCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        heroCtx.fill();
+        heroCtx.globalAlpha = 1;
+      });
+    }
+
+    // =========================================================================
+    // 3. MÓDULO 1: SIMULADOR DE GRAVEDAD Y RECETA DEL AIRE (SLIDES 2-3)
+    // =========================================================================
+    const gravityCanvas = document.getElementById('gravityCanvas');
+    const gravCtx = gravityCanvas.getContext('2d');
+    let lowGravityMode = false;
+    let gravParticles = [];
+
+    function initGravitySim() {
+      const w = gravityCanvas.width = gravityCanvas.offsetWidth;
+      const h = gravityCanvas.height = gravityCanvas.offsetHeight;
+      gravParticles = Array.from({ length: 65 }, () => ({
+        x: Math.random() * w,
+        y: h - 30 - Math.pow(Math.random(), 1.8) * (h - 50),
+        vx: (Math.random() - 0.5) * 1.4,
+        vy: (Math.random() - 0.5) * 1.4,
+        r: Math.random() * 2.5 + 1.5,
+        type: Math.random() > 0.22 ? 'N2' : 'O2'
+      }));
+    }
+
+    document.getElementById('toggleGravityBtn').addEventListener('click', (e) => {
+      lowGravityMode = !lowGravityMode;
+      const readout = document.getElementById('gravValueText');
+      if (lowGravityMode) {
+        readout.textContent = '0.15 G (Escape al vacío)';
+        readout.className = 'text-thermalOrange font-semibold';
+        e.target.textContent = 'Restaurar Gravedad 1.0 G';
+      } else {
+        readout.textContent = '1.0 G (Tierra - Anclaje)';
+        readout.className = 'text-cyanNeon font-semibold';
+        e.target.textContent = 'Simular Baja Gravedad';
+      }
+    });
+
+    function drawGravitySim() {
+      const w = gravityCanvas.width;
+      const h = gravityCanvas.height;
+      gravCtx.clearRect(0, 0, w, h);
+
+      // Etiquetas de altitud
+      gravCtx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+      gravCtx.font = '10px JetBrains Mono';
+      gravCtx.fillText('10.000 km — Límite Difuso (Espacio)', 12, 18);
+      gravCtx.fillText('0 km — Superficie Terrestre', 12, h - 38);
+
+      // Superficie curva inferior
+      gravCtx.fillStyle = '#0c2d48';
+      gravCtx.fillRect(0, h - 32, w, 32);
+      gravCtx.strokeStyle = '#00f0ff';
+      gravCtx.lineWidth = 2;
+      gravCtx.beginPath();
+      gravCtx.moveTo(0, h - 32);
+      gravCtx.lineTo(w, h - 32);
+      gravCtx.stroke();
+
+      // Física de partículas retenidas por gravedad
+      const gravityPull = lowGravityMode ? -0.025 : 0.045;
+
+      gravParticles.forEach(p => {
+        p.vy += gravityPull;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 5 || p.x > w - 5) p.vx *= -1;
+        if (p.y > h - 35) {
+          p.y = h - 35;
+          p.vy = -Math.abs(p.vy) * (0.7 + Math.random() * 0.4);
+        }
+        if (p.y < 5) {
+          if (lowGravityMode) {
+            // Escapa al espacio y reaparece abajo
+            p.y = h - 36;
+            p.vy = -Math.random() * 1.5;
+          } else {
+            p.y = 5;
+            p.vy = Math.abs(p.vy) * 0.6;
+          }
+        }
+
+        gravCtx.fillStyle = p.type === 'N2' ? '#00f0ff' : '#00ff9d';
+        gravCtx.beginPath();
+        gravCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        gravCtx.fill();
+      });
+    }
+
+    // Cámara de Moléculas (Receta del Aire - Slide 3)
+    const gasCanvas = document.getElementById('gasMoleculeCanvas');
+    const gasCtx = gasCanvas.getContext('2d');
+    let selectedGasKey = 'N2';
+    let airMolecules = [];
+
+    const gasData = {
+      N2: {
+        percent: '78%',
+        formula: 'Nitrógeno (N₂)',
+        tag: 'Componente estructural dominante',
+        color: '#00f0ff',
+        detail: '<strong class="text-cyanNeon font-mono">N₂ (78%):</strong> El componente estructural dominante. Es un gas estable que modera la reactividad del oxígeno y sostiene la presión atmosférica.'
+      },
+      O2: {
+        percent: '21%',
+        formula: 'Oxígeno (O₂)',
+        tag: 'El motor oxidante y vital',
+        color: '#00ff9d',
+        detail: '<strong class="text-bioticGreen font-mono">O₂ (21%):</strong> El motor oxidante y vital. Permite la respiración celular aeróbica y da origen en la estratosfera al escudo de Ozono (O₃).'
+      },
+      AR: {
+        percent: '0.9%',
+        formula: 'Argón (Ar)',
+        tag: 'Gas noble inerte',
+        color: '#c084fc',
+        detail: '<strong class="text-purple-400 font-mono">Argón (0.9%):</strong> Gas noble químicamente inerte acumulado durante miles de millones de años por desintegración radiactiva en la corteza terrestre.'
+      },
+      TRACE: {
+        percent: '~0.1%',
+        formula: 'Gases Traza',
+        tag: 'CO₂ (~0,041%) & H₂O (hasta 0,25%)',
+        color: '#ff5e3a',
+        detail: '<strong class="text-thermalOrange font-mono">El 1% crítico (~0.1% traza):</strong> Incluye Dióxido de Carbono (CO₂ ~0,041%, en aumento por actividad humana) y Vapor de Agua (H₂O variable hasta 0,25%). Regulan el efecto invernadero.'
+      }
+    };
+
+    function initGasMolecules() {
+      const w = gasCanvas.width = gasCanvas.offsetWidth;
+      const h = gasCanvas.height = gasCanvas.offsetHeight;
+      airMolecules = [];
+      // Proporción visual representativa
+      for (let i = 0; i < 38; i++) airMolecules.push(createMol(w, h, 'N2'));
+      for (let i = 0; i < 12; i++) airMolecules.push(createMol(w, h, 'O2'));
+      for (let i = 0; i < 3; i++) airMolecules.push(createMol(w, h, 'AR'));
+      for (let i = 0; i < 4; i++) airMolecules.push(createMol(w, h, 'TRACE'));
+    }
+
+    function createMol(w, h, type) {
+      return {
+        x: Math.random() * (w - 30) + 15,
+        y: Math.random() * (h - 30) + 15,
+        vx: (Math.random() - 0.5) * 1.8,
+        vy: (Math.random() - 0.5) * 1.8,
+        angle: Math.random() * Math.PI * 2,
+        vAngle: (Math.random() - 0.5) * 0.06,
+        type
+      };
+    }
+
+    function selectGas(key) {
+      selectedGasKey = key;
+      const info = gasData[key];
+      document.getElementById('donutPercent').textContent = info.percent;
+      document.getElementById('donutPercent').style.color = info.color;
+      document.getElementById('donutFormula').textContent = info.formula;
+      document.getElementById('donutTag').textContent = info.tag;
+      document.getElementById('gasDetailBox').innerHTML = info.detail;
+
+      document.querySelectorAll('.gas-btn').forEach(btn => {
+        if (btn.dataset.gas === key) {
+          btn.classList.add('border-cyanNeon', 'bg-cyanNeon/15');
+          btn.classList.remove('border-slate-700', 'bg-panelLight/60');
+        } else {
+          btn.classList.remove('border-cyanNeon', 'bg-cyanNeon/15');
+          btn.classList.add('border-slate-700', 'bg-panelLight/60');
+        }
+      });
+    }
+
+    function drawGasMolecules() {
+      const w = gasCanvas.width;
+      const h = gasCanvas.height;
+      gasCtx.clearRect(0, 0, w, h);
+
+      airMolecules.forEach(m => {
+        m.x += m.vx;
+        m.y += m.vy;
+        m.angle += m.vAngle;
+
+        if (m.x < 12 || m.x > w - 12) m.vx *= -1;
+        if (m.y < 12 || m.y > h - 12) m.vy *= -1;
+
+        const isHighlighted = m.type === selectedGasKey;
+        const baseColor = gasData[m.type].color;
+        gasCtx.globalAlpha = isHighlighted ? 1 : 0.22;
+
+        gasCtx.save();
+        gasCtx.translate(m.x, m.y);
+        gasCtx.rotate(m.angle);
+
+        if (m.type === 'AR') {
+          // Átomo individual
+          gasCtx.fillStyle = baseColor;
+          gasCtx.beginPath();
+          gasCtx.arc(0, 0, isHighlighted ? 5.5 : 4, 0, Math.PI * 2);
+          gasCtx.fill();
+        } else if (m.type === 'TRACE') {
+          // Molécula triatómica (CO2 / H2O)
+          gasCtx.fillStyle = baseColor;
+          gasCtx.beginPath();
+          gasCtx.arc(0, 0, 4.5, 0, Math.PI * 2);
+          gasCtx.arc(-7, 3, 3.2, 0, Math.PI * 2);
+          gasCtx.arc(7, 3, 3.2, 0, Math.PI * 2);
+          gasCtx.fill();
+        } else {
+          // Molécula diatómica (N2 / O2)
+          gasCtx.strokeStyle = baseColor;
+          gasCtx.lineWidth = 2;
+          gasCtx.beginPath();
+          gasCtx.moveTo(-5, 0);
+          gasCtx.lineTo(5, 0);
+          gasCtx.stroke();
+
+          gasCtx.fillStyle = baseColor;
+          gasCtx.beginPath();
+          gasCtx.arc(-5, 0, isHighlighted ? 4.5 : 3.5, 0, Math.PI * 2);
+          gasCtx.arc(5, 0, isHighlighted ? 4.5 : 3.5, 0, Math.PI * 2);
+          gasCtx.fill();
+        }
+
+        gasCtx.restore();
+        gasCtx.globalAlpha = 1;
+      });
+    }
+
+    // =========================================================================
+    // 4. MÓDULO 2: LAS 5 CAPAS ATMOSFÉRICAS & FÁBRICA DE OZONO (SLIDES 4-9)
+    // =========================================================================
+    const layerCanvas = document.getElementById('layerCanvas');
+    const layerCtx = layerCanvas.getContext('2d');
+    let currentLayer = 'troposphere';
+    let layerEntities = [];
+    let specialEventActive = false;
+
+    const layersInfo = {
+      troposphere: {
+        alt: '0 – 12/20 km',
+        pause: 'Límite Superior: Tropopausa',
+        title: 'Troposfera: La Capa del Cambio y la Vida',
+        action: '⚡ Activar Tormenta y Ciclos',
+        temp: '+15 °C → -56 °C',
+        density: 'Máxima (75% masa)',
+        cards: [
+          { title: 'Densidad Extrema', desc: 'Contiene tres cuartas partes (75%) de toda la masa de gases de la atmósfera por atracción gravitatoria.' },
+          { title: 'Dinámica (Tropos = Cambio)', desc: 'Aquí ocurren los fenómenos meteorológicos y los vuelos comerciales. Más ancha en el ecuador que en los polos.' },
+          { title: 'Ciclos Vitales', desc: 'Escenario activo de los ciclos biogeoquímicos: agua (H₂O), oxígeno (O₂), carbono (CO₂) y nitrógeno (N₂).' }
+        ]
+      },
+      stratosphere: {
+        alt: '12/20 – 50 km',
+        pause: 'Límite Superior: Estratopausa',
+        title: 'Estratosfera: El Escudo Térmico Estratificado',
+        action: '☀ Lanzar Pulso UV al Ozono',
+        temp: '-56 °C → -2 °C',
+        density: 'Estratificada por densidad',
+        cards: [
+          { title: 'La Ozonosfera', desc: 'Contiene la capa de ozono (O₃), responsable de absorber el calor y bloquear la radiación ultravioleta letal.' },
+          { title: 'Inversión Térmica', desc: 'A diferencia de la troposfera, aquí la temperatura aumenta con la altitud al absorber energía UV.' },
+          { title: 'Aire Estratificado (Stratos = Capas)', desc: 'Separada por densidad sin turbulencias: aire frío y pesado en la base; aire caliente y ligero en la cima.' }
+        ]
+      },
+      mesosphere: {
+        alt: '50 – 80 km',
+        pause: 'Límite Superior: Mesopausa',
+        title: 'Mesosfera: El Incinerador de Amenazas',
+        action: '☄ Lluvia de Meteoritos',
+        temp: '-2 °C → -90 °C',
+        density: 'Baja pero letal por fricción',
+        cards: [
+          { title: 'Ablación Atmosférica', desc: 'Es la zona donde arden los meteoros entrantes, creando el fenómeno luminoso de las "estrellas fugaces".' },
+          { title: 'Fricción Defensiva', desc: 'Aunque el gas es escaso, ofrece la densidad exacta para generar fricción y calor extremos contra rocas espaciales.' },
+          { title: 'Escudo Cinético', desc: 'Desintegra millones de meteoroides diariamente antes de que puedan impactar la superficie terrestre.' }
+        ]
+      },
+      thermosphere: {
+        alt: '80 – 700 km',
+        pause: 'Límite Superior: Termopausa',
+        title: 'Termosfera: Calor Extremo en el Cuasi-Vacío',
+        action: '🛰 Impulso Orbital ISS',
+        temp: 'Hasta 2.482 °C (4.500 °F)',
+        density: 'Cuasi-vacío (Sin sonido)',
+        cards: [
+          { title: 'Temperatura Paradójica', desc: 'Alcanza los 2.482 °C (4.500 °F) por absorción directa de radiación solar extrema de alta energía.' },
+          { title: 'Cero Transferencia Térmica', desc: 'Al haber tan pocas moléculas de gas, el calor no se transfiere a los objetos ni se propaga el sonido.' },
+          { title: 'Zona Orbital Baja', desc: 'Hogar de la Estación Espacial Internacional (ISS) y la mayoría de los satélites de observación en órbita baja.' }
+        ]
+      },
+      exosphere: {
+        alt: '700 – 10.000 km',
+        pause: 'Límite Difuso hacia el Espacio',
+        title: 'Exosfera: El Límite Difuso hacia el Vacío',
+        action: '📡 Pulso Satélite Órbita Alta',
+        temp: 'Extremadamente fría',
+        density: 'Dispersión Total (H y He)',
+        cards: [
+          { title: 'Desvanecimiento (Exo = Afuera)', desc: 'La capa más externa y extensa de la atmósfera. Tras ella comienza el espacio interplanetario.' },
+          { title: 'Gases Ligeros', desc: 'Predominan únicamente los átomos más ligeros del universo: Hidrógeno (H) y Helio (He).' },
+          { title: 'Vigilancia Espacial', desc: 'Territorio de satélites meteorológicos geoestacionarios y de órbita alta; moléculas apenas colisionan.' }
+        ]
+      }
+    };
+
+    function selectLayer(layerKey) {
+      currentLayer = layerKey;
+      const info = layersInfo[layerKey];
+
+      document.getElementById('layerAltitudeBadge').textContent = info.alt;
+      document.getElementById('layerPauseBadge').textContent = info.pause;
+      document.getElementById('layerTitle').textContent = info.title;
+      document.getElementById('layerActionBtn').textContent = info.action;
+      document.getElementById('layerTempMetric').textContent = info.temp;
+      document.getElementById('layerDensityMetric').textContent = info.density;
+
+      const cardsHtml = info.cards.map(c => `
+        <div class="p-4 rounded-xl bg-panelLight/80 border border-slate-700/70">
+          <h4 class="font-display font-bold text-cyanNeon text-sm">${c.title}</h4>
+          <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">${c.desc}</p>
+        </div>
+      `).join('');
+      document.getElementById('layerCardsGrid').innerHTML = cardsHtml;
+
+      document.querySelectorAll('.layer-tab').forEach(tab => {
+        if (tab.dataset.layer === layerKey) {
+          tab.classList.add('border-2', 'border-cyanNeon', 'bg-cyanNeon/15');
+          tab.classList.remove('border', 'border-slate-700/80', 'bg-panel');
+        } else {
+          tab.classList.remove('border-2', 'border-cyanNeon', 'bg-cyanNeon/15');
+          tab.classList.add('border', 'border-slate-700/80', 'bg-panel');
+        }
+      });
+
+      initLayerSimulation();
+    }
+
+    function triggerLayerSpecialEvent() {
+      specialEventActive = true;
+      setTimeout(() => { specialEventActive = false; }, 2800);
+      if (currentLayer === 'mesosphere') {
+        const w = layerCanvas.width;
+        for (let i = 0; i < 6; i++) {
+          layerEntities.push({
+            x: Math.random() * w * 0.7,
+            y: -20 - i * 30,
+            vx: 4.5 + Math.random() * 2,
+            vy: 3.5 + Math.random() * 1.5,
+            life: 1
+          });
+        }
+      }
+    }
+
+    function initLayerSimulation() {
+      const w = layerCanvas.width = layerCanvas.offsetWidth;
+      const h = layerCanvas.height = layerCanvas.offsetHeight;
+      layerEntities = [];
+
+      if (currentLayer === 'troposphere') {
+        for (let i = 0; i < 45; i++) {
+          layerEntities.push({ x: Math.random() * w, y: Math.random() * h, vy: 2 + Math.random() * 2 });
+        }
+      } else if (currentLayer === 'mesosphere') {
+        for (let i = 0; i < 4; i++) {
+          layerEntities.push({ x: Math.random() * w * 0.6, y: Math.random() * h * 0.4, vx: 4, vy: 3, life: 1 });
+        }
+      } else if (currentLayer === 'thermosphere' || currentLayer === 'exosphere') {
+        for (let i = 0; i < 35; i++) {
+          layerEntities.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 1 });
+        }
+      }
+    }
+
+    function drawLayerCanvas(time) {
+      const w = layerCanvas.width;
+      const h = layerCanvas.height;
+      layerCtx.clearRect(0, 0, w, h);
+
+      if (currentLayer === 'troposphere') {
+        // Cielo azul profundo troposférico + montañas + avión comercial + lluvia
+        const bg = layerCtx.createLinearGradient(0, 0, 0, h);
+        bg.addColorStop(0, '#071b36');
+        bg.addColorStop(1, '#0e3a5e');
+        layerCtx.fillStyle = bg;
+        layerCtx.fillRect(0, 0, w, h);
+
+        // Nubes
+        layerCtx.fillStyle = 'rgba(226, 232, 240, 0.16)';
+        for (let i = 0; i < 5; i++) {
+          const cx = ((time * 0.02 + i * 190) % (w + 160)) - 80;
+          layerCtx.beginPath();
+          layerCtx.arc(cx, 65 + (i % 2) * 25, 36, 0, Math.PI * 2);
+          layerCtx.arc(cx + 30, 65 + (i % 2) * 25, 28, 0, Math.PI * 2);
+          layerCtx.fill();
+        }
+
+        // Lluvia
+        layerCtx.strokeStyle = specialEventActive ? 'rgba(0, 240, 255, 0.7)' : 'rgba(125, 211, 252, 0.35)';
+        layerCtx.lineWidth = 1.5;
+        layerEntities.forEach(drop => {
+          drop.y += drop.vy * (specialEventActive ? 2 : 1);
+          drop.x -= 0.6;
+          if (drop.y > h) { drop.y = 75; drop.x = Math.random() * w; }
+          layerCtx.beginPath();
+          layerCtx.moveTo(drop.x, drop.y);
+          layerCtx.lineTo(drop.x - 2, drop.y + 9);
+          layerCtx.stroke();
+        });
+
+        // Avión comercial volando sobre las nubes
+        const planeX = ((time * 0.08) % (w + 120)) - 60;
+        const planeY = 48 + Math.sin(time * 0.003) * 4;
+        layerCtx.fillStyle = '#ffffff';
+        layerCtx.beginPath();
+        layerCtx.moveTo(planeX + 24, planeY);
+        layerCtx.lineTo(planeX - 14, planeY - 7);
+        layerCtx.lineTo(planeX - 8, planeY);
+        layerCtx.lineTo(planeX - 14, planeY + 7);
+        layerCtx.closePath();
+        layerCtx.fill();
+
+        // Relieve terrestre
+        layerCtx.fillStyle = '#06201a';
+        layerCtx.beginPath();
+        layerCtx.moveTo(0, h);
+        layerCtx.lineTo(0, h - 35);
+        layerCtx.lineTo(w * 0.25, h - 65);
+        layerCtx.lineTo(w * 0.55, h - 25);
+        layerCtx.lineTo(w * 0.85, h - 55);
+        layerCtx.lineTo(w, h - 30);
+        layerCtx.lineTo(w, h);
+        layerCtx.fill();
+
+      } else if (currentLayer === 'stratosphere') {
+        // Estratos horizontales + banda de ozono bloqueando rayos UV
+        const bg = layerCtx.createLinearGradient(0, 0, 0, h);
+        bg.addColorStop(0, '#050c1f');
+        bg.addColorStop(1, '#0b2545');
+        layerCtx.fillStyle = bg;
+        layerCtx.fillRect(0, 0, w, h);
+
+        // Estratos de densidad
+        for (let i = 1; i <= 4; i++) {
+          layerCtx.strokeStyle = 'rgba(0, 240, 255, 0.14)';
+          layerCtx.beginPath();
+          layerCtx.moveTo(0, (h / 5) * i);
+          layerCtx.lineTo(w, (h / 5) * i);
+          layerCtx.stroke();
+        }
+
+        // Banda Ozonosfera
+        const ozoneY = h * 0.48;
+        layerCtx.fillStyle = 'rgba(0, 255, 157, 0.16)';
+        layerCtx.fillRect(0, ozoneY - 18, w, 36);
+        layerCtx.fillStyle = '#00ff9d';
+        layerCtx.font = '11px JetBrains Mono';
+        layerCtx.fillText('OZONOSFERA (O₃) — FILTRO DE RADIACIÓN UV', 16, ozoneY + 4);
+
+        // Rayos UV entrantes que rebotan en el ozono
+        const rayCount = specialEventActive ? 10 : 5;
+        for (let i = 0; i < rayCount; i++) {
+          const rx = ((i + 0.5) * (w / rayCount)) + Math.sin(time * 0.002 + i) * 15;
+          layerCtx.strokeStyle = '#ff5e3a';
+          layerCtx.lineWidth = 2.5;
+          layerCtx.beginPath();
+          layerCtx.moveTo(rx - 30, 0);
+          layerCtx.lineTo(rx, ozoneY);
+          layerCtx.lineTo(rx + 35, 15);
+          layerCtx.stroke();
+
+          // Destello de absorción
+          layerCtx.fillStyle = '#00ff9d';
+          layerCtx.beginPath();
+          layerCtx.arc(rx, ozoneY, 4 + Math.sin(time * 0.01 + i) * 2, 0, Math.PI * 2);
+          layerCtx.fill();
+        }
+
+      } else if (currentLayer === 'mesosphere') {
+        // Oscuridad mesosférica con meteoritos desintegrándose por fricción
+        layerCtx.fillStyle = '#040814';
+        layerCtx.fillRect(0, 0, w, h);
+
+        layerEntities.forEach(m => {
+          m.x += m.vx;
+          m.y += m.vy;
+          m.life -= 0.012;
+          if (m.life <= 0 || m.y > h * 0.85) {
+            m.x = Math.random() * w * 0.65;
+            m.y = -10;
+            m.life = 1;
+          }
+
+          // Estela incandescente
+          const grad = layerCtx.createLinearGradient(m.x - 45, m.y - 35, m.x, m.y);
+          grad.addColorStop(0, 'rgba(255, 94, 58, 0)');
+          grad.addColorStop(1, `rgba(255, 190, 60, ${m.life})`);
+          layerCtx.strokeStyle = grad;
+          layerCtx.lineWidth = 3.5;
+          layerCtx.beginPath();
+          layerCtx.moveTo(m.x - 45, m.y - 35);
+          layerCtx.lineTo(m.x, m.y);
+          layerCtx.stroke();
+
+          layerCtx.fillStyle = '#ffffff';
+          layerCtx.beginPath();
+          layerCtx.arc(m.x, m.y, 3 * m.life, 0, Math.PI * 2);
+          layerCtx.fill();
+        });
+
+      } else if (currentLayer === 'thermosphere') {
+        // Estrellas + Auroras + Órbita de la Estación Espacial Internacional (ISS)
+        layerCtx.fillStyle = '#03060f';
+        layerCtx.fillRect(0, 0, w, h);
+
+        layerEntities.forEach(s => {
+          layerCtx.fillStyle = 'rgba(255,255,255,0.6)';
+          layerCtx.beginPath();
+          layerCtx.arc(s.x, s.y, s.r * 0.7, 0, Math.PI * 2);
+          layerCtx.fill();
+        });
+
+        // Ondas de aurora / radiación solar
+        layerCtx.strokeStyle = 'rgba(0, 255, 157, 0.25)';
+        layerCtx.lineWidth = 14;
+        layerCtx.beginPath();
+        for (let x = 0; x <= w; x += 20) {
+          const y = h * 0.7 + Math.sin(x * 0.012 + time * 0.002) * 22;
+          if (x === 0) layerCtx.moveTo(x, y);
+          else layerCtx.lineTo(x, y);
+        }
+        layerCtx.stroke();
+
+        // Satélite / ISS orbitando
+        const speed = specialEventActive ? 0.16 : 0.06;
+        const issX = ((time * speed) % (w + 140)) - 70;
+        const issY = h * 0.42 + Math.sin(time * 0.002) * 14;
+
+        // Paneles solares ISS
+        layerCtx.fillStyle = '#00f0ff';
+        layerCtx.fillRect(issX - 28, issY - 14, 12, 28);
+        layerCtx.fillRect(issX + 16, issY - 14, 12, 28);
+        // Módulo central
+        layerCtx.fillStyle = '#e2e8f0';
+        layerCtx.fillRect(issX - 16, issY - 4, 32, 8);
+
+        layerCtx.fillStyle = '#00f0ff';
+        layerCtx.font = '10px JetBrains Mono';
+        layerCtx.fillText('ISS (~408 km)', issX - 30, issY - 20);
+
+      } else if (currentLayer === 'exosphere') {
+        // Vacío casi total, átomos aislados de H y He, satélite de órbita alta
+        layerCtx.fillStyle = '#02040a';
+        layerCtx.fillRect(0, 0, w, h);
+
+        layerEntities.forEach((atom, i) => {
+          if (i % 4 !== 0) return; // Muy dispersos
+          atom.x += Math.sin(time * 0.001 + i) * 0.3;
+          atom.y += Math.cos(time * 0.001 + i) * 0.3;
+          layerCtx.fillStyle = i % 8 === 0 ? '#38bdf8' : '#a855f7';
+          layerCtx.beginPath();
+          layerCtx.arc(atom.x, atom.y, 3, 0, Math.PI * 2);
+          layerCtx.fill();
+          layerCtx.font = '9px JetBrains Mono';
+          layerCtx.fillText(i % 8 === 0 ? 'H' : 'He', atom.x + 6, atom.y + 3);
+        });
+
+        // Satélite meteorológico de órbita alta
+        const satX = w * 0.65 + Math.cos(time * 0.001) * 30;
+        const satY = h * 0.45 + Math.sin(time * 0.001) * 15;
+        layerCtx.strokeStyle = '#00f0ff';
+        layerCtx.lineWidth = 2;
+        layerCtx.strokeRect(satX - 10, satY - 10, 20, 20);
+        layerCtx.fillStyle = '#0284c7';
+        layerCtx.fillRect(satX - 34, satY - 5, 22, 10);
+        layerCtx.fillRect(satX + 12, satY - 5, 22, 10);
+
+        if (specialEventActive) {
+          layerCtx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
+          layerCtx.beginPath();
+          layerCtx.arc(satX, satY, (time * 0.08) % 90, 0, Math.PI * 2);
+          layerCtx.stroke();
+        }
+      }
+    }
+
+    // Simulador Interactivo: La Fábrica Molecular de Ozono (O3 - Slide 6)
+    const ozoneCanvas = document.getElementById('ozoneCanvas');
+    const ozoneCtx = ozoneCanvas.getContext('2d');
+    let currentOzoneStep = 1;
+    let ozoneAnimProgress = 0;
+
+    const ozoneBanners = {
+      1: 'Paso 1: Impacto — Radiación solar UV golpea una molécula de O₂',
+      2: 'Paso 2: Disociación — El enlace se rompe en dos átomos reactivos (O + O)',
+      3: 'Paso 3: Fusión — Un átomo libre (O) se une a una molécula intacta (O₂)',
+      4: 'Paso 4: El Escudo — Nace el Ozono (O₃) y bloquea rayos UV mutagénicos'
+    };
+
+    function setOzoneStep(step) {
+      currentOzoneStep = step;
+      ozoneAnimProgress = 0;
+      document.getElementById('ozoneFormulaBanner').textContent = ozoneBanners[step];
+
+      document.querySelectorAll('.ozone-step-btn').forEach((btn, i) => {
+        if (i + 1 === step) {
+          btn.classList.add('bg-bioticGreen', 'text-space', 'font-bold', 'border-bioticGreen');
+          btn.classList.remove('bg-panelLight', 'text-slate-300', 'border-slate-700');
+        } else {
+          btn.classList.remove('bg-bioticGreen', 'text-space', 'font-bold', 'border-bioticGreen');
+          btn.classList.add('bg-panelLight', 'text-slate-300', 'border-slate-700');
+        }
+      });
+
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`ozone-card-${i}`);
+        if (i === step) {
+          card.classList.add('border-bioticGreen', 'bg-bioticGreen/10');
+          card.classList.remove('border-slate-800', 'bg-panelLight/50');
+        } else {
+          card.classList.remove('border-bioticGreen', 'bg-bioticGreen/10');
+          card.classList.add('border-slate-800', 'bg-panelLight/50');
+        }
+      }
+    }
+
+    function playFullOzoneCycle() {
+      let step = 1;
+      setOzoneStep(1);
+      const interval = setInterval(() => {
+        step++;
+        if (step > 4) {
+          clearInterval(interval);
+        } else {
+          setOzoneStep(step);
+        }
+      }, 1700);
+    }
+
+    function drawOxygenAtom(x, y, label = 'O', glow = false) {
+      if (glow) {
+        ozoneCtx.fillStyle = 'rgba(255, 94, 58, 0.25)';
+        ozoneCtx.beginPath();
+        ozoneCtx.arc(x, y, 24, 0, Math.PI * 2);
+        ozoneCtx.fill();
+      }
+      const grad = ozoneCtx.createRadialGradient(x - 4, y - 4, 2, x, y, 16);
+      grad.addColorStop(0, '#7dd3fc');
+      grad.addColorStop(1, '#0284c7');
+      ozoneCtx.fillStyle = grad;
+      ozoneCtx.beginPath();
+      ozoneCtx.arc(x, y, 16, 0, Math.PI * 2);
+      ozoneCtx.fill();
+
+      ozoneCtx.fillStyle = '#ffffff';
+      ozoneCtx.font = 'bold 11px JetBrains Mono';
+      ozoneCtx.textAlign = 'center';
+      ozoneCtx.fillText(label, x, y + 4);
+      ozoneCtx.textAlign = 'left';
+    }
+
+    function drawOzoneCanvas(time) {
+      const w = ozoneCanvas.width;
+      const h = ozoneCanvas.height;
+      ozoneCtx.clearRect(0, 0, w, h);
+      ozoneAnimProgress = Math.min(1, ozoneAnimProgress + 0.025);
+
+      const cx = w / 2;
+      const cy = h / 2 + 10;
+
+      if (currentOzoneStep === 1) {
+        // O2 en el centro + Rayo UV impactando desde arriba
+        ozoneCtx.strokeStyle = '#38bdf8';
+        ozoneCtx.lineWidth = 5;
+        ozoneCtx.beginPath();
+        ozoneCtx.moveTo(cx - 22, cy);
+        ozoneCtx.lineTo(cx + 22, cy);
+        ozoneCtx.stroke();
+
+        drawOxygenAtom(cx - 22, cy, 'O');
+        drawOxygenAtom(cx + 22, cy, 'O');
+
+        // Rayo UV zig-zag
+        const rayY = -20 + ozoneAnimProgress * (cy - 10);
+        ozoneCtx.strokeStyle = '#fbbf24';
+        ozoneCtx.lineWidth = 4;
+        ozoneCtx.beginPath();
+        ozoneCtx.moveTo(cx - 15, 0);
+        ozoneCtx.lineTo(cx + 8, rayY * 0.5);
+        ozoneCtx.lineTo(cx - 6, rayY * 0.55);
+        ozoneCtx.lineTo(cx, rayY);
+        ozoneCtx.stroke();
+
+        ozoneCtx.fillStyle = '#fbbf24';
+        ozoneCtx.font = 'bold 12px JetBrains Mono';
+        ozoneCtx.fillText('⚡ FOTÓN UV', cx + 18, Math.max(25, rayY * 0.6));
+
+      } else if (currentOzoneStep === 2) {
+        // Dos átomos separados y altamente reactivos
+        const sep = 22 + ozoneAnimProgress * 55;
+        drawOxygenAtom(cx - sep, cy, 'O*', true);
+        drawOxygenAtom(cx + sep, cy, 'O*', true);
+
+        ozoneCtx.fillStyle = '#ff5e3a';
+        ozoneCtx.font = '12px JetBrains Mono';
+        ozoneCtx.textAlign = 'center';
+        ozoneCtx.fillText('Átomos libres altamente reactivos (O + O)', cx, cy - 42);
+        ozoneCtx.textAlign = 'left';
+
+      } else if (currentOzoneStep === 3) {
+        // Átomo libre O acercándose a molécula O2 intacta
+        const atomX = cx - 95 + ozoneAnimProgress * 58;
+        drawOxygenAtom(atomX, cy - 12, 'O', true);
+
+        ozoneCtx.strokeStyle = '#38bdf8';
+        ozoneCtx.lineWidth = 5;
+        ozoneCtx.beginPath();
+        ozoneCtx.moveTo(cx + 15, cy + 10);
+        ozoneCtx.lineTo(cx + 55, cy - 12);
+        ozoneCtx.stroke();
+
+        drawOxygenAtom(cx + 15, cy + 10, 'O');
+        drawOxygenAtom(cx + 55, cy - 12, 'O');
+
+      } else if (currentOzoneStep === 4) {
+        // Molécula angular de Ozono (O3) dentro de escudo protector
+        const pulse = 58 + Math.sin(time * 0.005) * 4;
+        ozoneCtx.fillStyle = 'rgba(0, 255, 157, 0.12)';
+        ozoneCtx.strokeStyle = '#00ff9d';
+        ozoneCtx.lineWidth = 2.5;
+        ozoneCtx.beginPath();
+        ozoneCtx.arc(cx, cy, pulse, 0, Math.PI * 2);
+        ozoneCtx.fill();
+        ozoneCtx.stroke();
+
+        // Enlaces O3
+        ozoneCtx.strokeStyle = '#00ff9d';
+        ozoneCtx.lineWidth = 4;
+        ozoneCtx.beginPath();
+        ozoneCtx.moveTo(cx - 26, cy + 14);
+        ozoneCtx.lineTo(cx, cy - 16);
+        ozoneCtx.lineTo(cx + 26, cy + 14);
+        ozoneCtx.stroke();
+
+        drawOxygenAtom(cx, cy - 16, 'O');
+        drawOxygenAtom(cx - 26, cy + 14, 'O');
+        drawOxygenAtom(cx + 26, cy + 14, 'O');
+
+        // Rayo UV rebotando fuera del escudo
+        ozoneCtx.strokeStyle = '#ff5e3a';
+        ozoneCtx.lineWidth = 3;
+        ozoneCtx.beginPath();
+        ozoneCtx.moveTo(cx - 110, 15);
+        ozoneCtx.lineTo(cx - 48, cy - 34);
+        ozoneCtx.lineTo(cx - 95, cy - 55);
+        ozoneCtx.stroke();
+        ozoneCtx.fillStyle = '#00ff9d';
+        ozoneCtx.font = 'bold 11px JetBrains Mono';
+        ozoneCtx.fillText('ESCUDO O₃ ACTIVO (UV BLOQUEADO)', cx + 68, cy - 25);
+      }
+    }
+
+    // =========================================================================
+    // 5. MÓDULO 3: TERMÓMETRO ATMOSFÉRICO INTERACTIVO (SLIDE 10)
+    // =========================================================================
+    const probeSlider = document.getElementById('probeSlider');
+
+    function updateThermoProbe(val) {
+      const p = Number(val);
+      // Mapear 0..100 a coordenadas SVG de la polilínea (350 -> 20)
+      const svgY = 350 - (p / 100) * 330;
+      let svgX = 230;
+      let altText = '';
+      let tempText = '';
+      let descText = '';
+
+      if (p <= 18) {
+        // Troposfera: (230,350) -> (130,290)
+        const t = p / 18;
+        svgX = 230 + t * (130 - 230);
+        const km = Math.round(t * 20);
+        const temp = Math.round(15 - t * 71);
+        altText = `${km} km (Troposfera)`;
+        tempText = `${temp} °C`;
+        descText = 'Troposfera: La temperatura baja con la altitud porque nos alejamos del calor irradiado por la superficie terrestre.';
+      } else if (p <= 40) {
+        // Estratosfera: (130,290) -> (265,220)
+        const t = (p - 18) / 22;
+        svgX = 130 + t * (265 - 130);
+        const km = Math.round(20 + t * 30);
+        const temp = Math.round(-56 + t * 54);
+        altText = `${km} km (Estratosfera)`;
+        tempText = `${temp} °C`;
+        descText = 'Estratosfera: Inversión térmica — sube la temperatura porque la capa de ozono absorbe radiación UV.';
+      } else if (p <= 60) {
+        // Mesosfera: (265,220) -> (110,152)
+        const t = (p - 40) / 20;
+        svgX = 265 + t * (110 - 265);
+        const km = Math.round(50 + t * 30);
+        const temp = Math.round(-2 - t * 88);
+        altText = `${km} km (Mesosfera)`;
+        tempText = `${temp} °C`;
+        descText = 'Mesosfera: Baja drásticamente la temperatura hasta -90 °C por la escasa densidad de gases para retener calor.';
+      } else if (p <= 83) {
+        // Termosfera: (110,152) -> (435,77)
+        const t = (p - 60) / 23;
+        svgX = 110 + t * (435 - 110);
+        const km = Math.round(80 + t * 620);
+        const temp = Math.round(-90 + t * 2572);
+        altText = `${km} km (Termosfera)`;
+        tempText = `+${temp.toLocaleString('es-ES')} °C`;
+        descText = 'Termosfera: Se dispara hasta 2.482 °C por absorción de radiación solar extrema de alta energía.';
+      } else {
+        // Exosfera: (435,77) -> (465,20)
+        const t = (p - 83) / 17;
+        svgX = 435 + t * (465 - 435);
+        const km = Math.round(700 + t * 9300);
+        altText = `${km.toLocaleString('es-ES')} km (Exosfera)`;
+        tempText = 'Límite difuso (Vacío)';
+        descText = 'Exosfera: Límite difuso hacia el espacio exterior; moléculas extremadamente separadas de H y He.';
+      }
+
+      document.getElementById('probeLine').setAttribute('y1', svgY);
+      document.getElementById('probeLine').setAttribute('y2', svgY);
+      document.getElementById('probeDot').setAttribute('cx', svgX);
+      document.getElementById('probeDot').setAttribute('cy', svgY);
+
+      document.getElementById('probeAltReadout').textContent = altText;
+      document.getElementById('probeTempReadout').textContent = tempText;
+      document.getElementById('probeDescReadout').textContent = descText;
+    }
+
+    probeSlider.addEventListener('input', (e) => updateThermoProbe(e.target.value));
+
+    function setProbeByLayer(sliderVal) {
+      probeSlider.value = sliderVal;
+      updateThermoProbe(sliderVal);
+    }
+
+    // =========================================================================
+    // 6. MÓDULO 4: EFECTO INVERNADERO, FLUIDOS Y CONVECCIÓN (SLIDES 12-14)
+    // =========================================================================
+    const ghCanvas = document.getElementById('greenhouseCanvas');
+    const ghCtx = ghCanvas.getContext('2d');
+    let hasAtmosphere = true;
+
+    function setGreenhouseMode(enabled) {
+      hasAtmosphere = enabled;
+      const tempDisp = document.getElementById('ghTempDisplay');
+      const exp = document.getElementById('ghExplanation');
+      const noBtn = document.getElementById('ghNoAtmBtn');
+      const yesBtn = document.getElementById('ghWithAtmBtn');
+
+      if (enabled) {
+        tempDisp.textContent = '+15 °C (El Incubador)';
+        tempDisp.className = 'font-display text-2xl font-bold text-bioticGreen';
+        exp.innerHTML = '<strong class="text-bioticGreen">Con Atmósfera (El Incubador +15 °C):</strong> Los gases permiten el ingreso de la radiación solar para la fotosíntesis. El calor infrarrojo (onda larga) rebota en el dosel de gases de efecto invernadero y es parcialmente retenido.';
+        yesBtn.className = 'px-3 py-1.5 rounded-lg font-mono text-xs bg-bioticGreen text-space font-bold transition cursor-pointer';
+        noBtn.className = 'px-3 py-1.5 rounded-lg font-mono text-xs text-slate-300 hover:text-white transition cursor-pointer';
+      } else {
+        tempDisp.textContent = '-18 °C (Planeta Helado)';
+        tempDisp.className = 'font-display text-2xl font-bold text-cyanNeon';
+        exp.innerHTML = '<strong class="text-cyanNeon">Sin Atmósfera (El Planeta Helado -18 °C):</strong> La radiación solar entra, calienta brevemente la roca y escapa inmediatamente al espacio exterior sin retención térmica.';
+        noBtn.className = 'px-3 py-1.5 rounded-lg font-mono text-xs bg-cyanNeon text-space font-bold transition cursor-pointer';
+        yesBtn.className = 'px-3 py-1.5 rounded-lg font-mono text-xs text-slate-300 hover:text-white transition cursor-pointer';
+      }
+    }
+
+    function drawGreenhouseCanvas(time) {
+      const w = ghCanvas.width;
+      const h = ghCanvas.height;
+      ghCtx.clearRect(0, 0, w, h);
+
+      // Superficie terrestre (helada o viva)
+      ghCtx.fillStyle = hasAtmosphere ? '#064e3b' : '#1e3a5f';
+      ghCtx.fillRect(0, h - 32, w, 32);
+
+      // Dosel de gases de efecto invernadero
+      if (hasAtmosphere) {
+        ghCtx.fillStyle = 'rgba(0, 255, 157, 0.14)';
+        ghCtx.fillRect(0, 48, w, 28);
+        ghCtx.strokeStyle = 'rgba(0, 255, 157, 0.45)';
+        ghCtx.setLineDash([6, 6]);
+        ghCtx.strokeRect(0, 48, w, 28);
+        ghCtx.setLineDash([]);
+        ghCtx.fillStyle = '#00ff9d';
+        ghCtx.font = '10px JetBrains Mono';
+        ghCtx.fillText('DOSEL DE GASES DE EFECTO INVERNADERO (H₂O, CO₂, CH₄)', 14, 66);
+      }
+
+      // Rayos solares entrantes (amarillos) y radiación infrarroja saliente (naranja)
+      const phase = (time * 0.06) % (h - 32);
+      for (let i = 0; i < 3; i++) {
+        const sx = w * (0.28 + i * 0.24);
+        // Radiación solar entrando
+        ghCtx.strokeStyle = '#fbbf24';
+        ghCtx.lineWidth = 2.5;
+        ghCtx.beginPath();
+        ghCtx.moveTo(sx - 40, 0);
+        ghCtx.lineTo(sx, h - 32);
+        ghCtx.stroke();
+
+        // Fotón solar bajando
+        const py = (phase + i * 50) % (h - 32);
+        const px = sx - 40 * (1 - py / (h - 32));
+        ghCtx.fillStyle = '#fbbf24';
+        ghCtx.beginPath();
+        ghCtx.arc(px, py, 4, 0, Math.PI * 2);
+        ghCtx.fill();
+
+        // Radiación infrarroja subiendo desde el suelo
+        ghCtx.strokeStyle = '#ff5e3a';
+        ghCtx.lineWidth = 2;
+        ghCtx.beginPath();
+        ghCtx.moveTo(sx, h - 32);
+        if (hasAtmosphere && i !== 1) {
+          // Rebota en el dosel atmosférico hacia la superficie
+          ghCtx.lineTo(sx + 35, 62);
+          ghCtx.lineTo(sx + 70, h - 32);
+        } else {
+          // Escapa al espacio
+          ghCtx.lineTo(sx + 45, 0);
+        }
+        ghCtx.stroke();
+      }
+    }
+
+    // Canvas de Presión y Sustentación Aerodinámica (Slide 13)
+    const aeroCanvas = document.getElementById('aeroCanvas');
+    const aeroCtx = aeroCanvas.getContext('2d');
+
+    function drawAeroCanvas(time) {
+      const w = aeroCanvas.width;
+      const h = aeroCanvas.height;
+      aeroCtx.clearRect(0, 0, w, h);
+
+      // Mitad izquierda: Columna de presión atmosférica sobre agua líquida
+      const colX = w * 0.14;
+      const colW = w * 0.22;
+      const colGrad = aeroCtx.createLinearGradient(0, 20, 0, h - 35);
+      colGrad.addColorStop(0, 'rgba(0, 240, 255, 0.06)');
+      colGrad.addColorStop(1, 'rgba(0, 240, 255, 0.38)');
+      aeroCtx.fillStyle = colGrad;
+      aeroCtx.fillRect(colX, 20, colW, h - 55);
+      aeroCtx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
+      aeroCtx.strokeRect(colX, 20, colW, h - 55);
+
+      // Flechas de presión hacia abajo
+      const arrowOffset = (time * 0.04) % 24;
+      aeroCtx.strokeStyle = '#00f0ff';
+      aeroCtx.lineWidth = 2;
+      for (let y = 35 + arrowOffset; y < h - 45; y += 35) {
+        aeroCtx.beginPath();
+        aeroCtx.moveTo(colX + colW / 2, y - 10);
+        aeroCtx.lineTo(colX + colW / 2, y + 8);
+        aeroCtx.lineTo(colX + colW / 2 - 5, y + 3);
+        aeroCtx.moveTo(colX + colW / 2, y + 8);
+        aeroCtx.lineTo(colX + colW / 2 + 5, y + 3);
+        aeroCtx.stroke();
+      }
+
+      // Agua líquida estable bajo presión
+      aeroCtx.fillStyle = '#0284c7';
+      aeroCtx.fillRect(12, h - 35, w * 0.44, 25);
+      aeroCtx.fillStyle = '#e0f2fe';
+      aeroCtx.font = '10px JetBrains Mono';
+      aeroCtx.fillText('AGUA LÍQUIDA ESTABLE', 22, h - 19);
+
+      // Divisor vertical
+      aeroCtx.strokeStyle = '#1e293b';
+      aeroCtx.beginPath();
+      aeroCtx.moveTo(w * 0.48, 12);
+      aeroCtx.lineTo(w * 0.48, h - 12);
+      aeroCtx.stroke();
+
+      // Mitad derecha: Perfil aerodinámico (ala) + partículas densas generando sustentación
+      const wingX = w * 0.62;
+      const wingY = h * 0.46 + Math.sin(time * 0.004) * 5;
+
+      // Flujo de aire alrededor del ala
+      aeroCtx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+      aeroCtx.lineWidth = 1.5;
+      [-28, -12, 16, 30].forEach(offset => {
+        aeroCtx.beginPath();
+        aeroCtx.moveTo(w * 0.5, wingY + offset);
+        aeroCtx.quadraticCurveTo(wingX + 35, wingY + offset - (offset < 0 ? 18 : -6), w - 12, wingY + offset);
+        aeroCtx.stroke();
+      });
+
+      // Perfil alar estilizado
+      aeroCtx.fillStyle = '#cbd5e1';
+      aeroCtx.beginPath();
+      aeroCtx.moveTo(wingX, wingY);
+      aeroCtx.quadraticCurveTo(wingX + 30, wingY - 22, wingX + 95, wingY + 4);
+      aeroCtx.quadraticCurveTo(wingX + 30, wingY + 10, wingX, wingY);
+      aeroCtx.fill();
+
+      // Flechas naranjas de sustentación inferior
+      aeroCtx.strokeStyle = '#ff5e3a';
+      aeroCtx.lineWidth = 2.5;
+      [20, 45, 70].forEach(dx => {
+        aeroCtx.beginPath();
+        aeroCtx.moveTo(wingX + dx, wingY + 42);
+        aeroCtx.lineTo(wingX + dx, wingY + 14);
+        aeroCtx.stroke();
+      });
+
+      aeroCtx.fillStyle = '#ff5e3a';
+      aeroCtx.font = '10px JetBrains Mono';
+      aeroCtx.fillText('SUSTENTACIÓN MOLECULAR', w * 0.54, h - 16);
+    }
+
+    // Canvas de La Máquina Termodinámica (Convección - Slide 14)
+    const convCanvas = document.getElementById('convectionCanvas');
+    const convCtx = convCanvas.getContext('2d');
+    let activeThermoStep = 1;
+    let convParticles = [];
+
+    function initConvection() {
+      const w = convCanvas.width = convCanvas.offsetWidth;
+      const h = convCanvas.height = convCanvas.offsetHeight;
+      convParticles = Array.from({ length: 36 }, (_, i) => ({
+        t: i / 36
+      }));
+    }
+
+    function highlightThermoStep(step) {
+      activeThermoStep = step;
+      document.querySelectorAll('.thermo-step-pill').forEach((pill, idx) => {
+        if (idx + 1 === step) {
+          pill.classList.add('bg-thermalOrange', 'text-white', 'font-bold');
+          pill.classList.remove('bg-panelLight', 'text-slate-300', 'border', 'border-slate-700');
+        } else {
+          pill.classList.remove('bg-thermalOrange', 'text-white', 'font-bold');
+          pill.classList.add('bg-panelLight', 'text-slate-300', 'border', 'border-slate-700');
+        }
+      });
+
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`tstep-${i}`);
+        if (i === step) {
+          el.classList.add('border-thermalOrange', 'bg-thermalOrange/15');
+          el.classList.remove('border-slate-800', 'bg-panelLight/60');
+        } else {
+          el.classList.remove('border-thermalOrange', 'bg-thermalOrange/15');
+          el.classList.add('border-slate-800', 'bg-panelLight/60');
+        }
+      }
+    }
+
+    function drawConvectionCanvas(time) {
+      const w = convCanvas.width;
+      const h = convCanvas.height;
+      convCtx.clearRect(0, 0, w, h);
+
+      // Zona caliente izquierda (superficie solar) y zona fría derecha (océano/nubes)
+      const warmGrad = convCtx.createRadialGradient(w * 0.22, h - 20, 10, w * 0.22, h - 20, 140);
+      warmGrad.addColorStop(0, 'rgba(255, 94, 58, 0.35)');
+      warmGrad.addColorStop(1, 'rgba(255, 94, 58, 0)');
+      convCtx.fillStyle = warmGrad;
+      convCtx.fillRect(0, 0, w * 0.5, h);
+
+      // Océano abajo a la derecha
+      convCtx.fillStyle = '#0369a1';
+      convCtx.fillRect(w * 0.45, h - 24, w * 0.55, 24);
+      // Tierra caliente abajo a la izquierda
+      convCtx.fillStyle = '#7c2d12';
+      convCtx.fillRect(0, h - 24, w * 0.45, 24);
+
+      // Nube de condensación arriba a la derecha (Paso 5)
+      convCtx.fillStyle = activeThermoStep === 5 ? 'rgba(0, 255, 157, 0.35)' : 'rgba(226, 232, 240, 0.2)';
+      convCtx.beginPath();
+      convCtx.arc(w * 0.75, 42, 26, 0, Math.PI * 2);
+      convCtx.arc(w * 0.81, 42, 22, 0, Math.PI * 2);
+      convCtx.fill();
+
+      // Gotas de lluvia en el paso 5
+      convCtx.strokeStyle = '#38bdf8';
+      for (let i = 0; i < 6; i++) {
+        const rx = w * 0.72 + i * 10;
+        const ry = 68 + ((time * 0.08 + i * 25) % (h - 96));
+        convCtx.beginPath();
+        convCtx.moveTo(rx, ry);
+        convCtx.lineTo(rx, ry + 8);
+        convCtx.stroke();
+      }
+
+      // Bucle convectivo rectangular redondeado de partículas
+      const leftX = w * 0.22;
+      const rightX = w * 0.78;
+      const topY = 45;
+      const botY = h - 42;
+
+      convParticles.forEach(p => {
+        p.t = (p.t + 0.0035) % 1;
+        let x, y, color;
+
+        if (p.t < 0.25) {
+          // 1-3: Ascenso caliente por la izquierda
+          const u = p.t / 0.25;
+          x = leftX + Math.sin(u * Math.PI * 2) * 8;
+          y = botY - u * (botY - topY);
+          color = '#ff5e3a';
+        } else if (p.t < 0.5) {
+          // Flujo superior hacia zona fría
+          const u = (p.t - 0.25) / 0.25;
+          x = leftX + u * (rightX - leftX);
+          y = topY;
+          color = '#fbbf24';
+        } else if (p.t < 0.75) {
+          // Descenso frío por la derecha
+          const u = (p.t - 0.5) / 0.25;
+          x = rightX;
+          y = topY + u * (botY - topY);
+          color = '#00f0ff';
+        } else {
+          // 4: Viento frío superficial llenando el vacío hacia la izquierda
+          const u = (p.t - 0.75) / 0.25;
+          x = rightX - u * (rightX - leftX);
+          y = botY;
+          color = '#38bdf8';
+        }
+
+        convCtx.fillStyle = color;
+        convCtx.beginPath();
+        convCtx.arc(x, y, 4, 0, Math.PI * 2);
+        convCtx.fill();
+      });
+
+      // Etiquetas de estado en el lienzo
+      convCtx.font = 'bold 11px JetBrains Mono';
+      convCtx.fillStyle = '#ff5e3a';
+      convCtx.fillText('▲ ASCENSO CÁLIDO (BAJA PRESIÓN)', 18, h / 2);
+      convCtx.fillStyle = '#00f0ff';
+      convCtx.fillText('◀ VIENTO SUPERFICIAL (AIRE FRÍO)', w * 0.34, h - 30);
+    }
+
+    // =========================================================================
+    // 7. MÓDULO 5: EVOLUCIÓN EN 4.500 MILLONES DE AÑOS (SLIDES 15-19)
+    // =========================================================================
+    const evoCanvas = document.getElementById('evolutionCanvas');
+    const evoCtx = evoCanvas.getContext('2d');
+    let selectedEraKey = 'genesis';
+    let evoParticles = [];
+
+    const erasData = {
+      genesis: {
+        badge: 'HACE 4.500 MILLONES DE AÑOS',
+        chem: 'H₂ / He (Fuga al espacio profundo)',
+        o2: '0.0%',
+        title: 'Génesis: La Proto-Tierra y la Pérdida de Gases',
+        cards: [
+          { color: 'border-thermalOrange', titleColor: 'text-thermalOrange', title: 'Agregación', text: 'Formación por colisión de pequeños planetesimales ricos en óxidos, metales y silicatos.' },
+          { color: 'border-amber-400', titleColor: 'text-amber-400', title: 'Diferenciación', text: 'Los elementos pesados (hierro/níquel) se hunden para formar el núcleo; los silicatos forman el manto.' },
+          { color: 'border-cyanNeon', titleColor: 'text-cyanNeon', title: 'Fuga Primordial', text: 'La gravedad de esta Tierra temprana era insuficiente; la mayor parte del hidrógeno ligero escapó al espacio.' }
+        ]
+      },
+      phase1: {
+        badge: 'HACE 4.450 MILLONES DE AÑOS',
+        chem: 'Reductora tóxica (H₂, CO₂, N₂, Vapor H₂O)',
+        o2: '0.0% (Sin rastro de oxígeno)',
+        title: 'Fase I: La Atmósfera Primigenia',
+        cards: [
+          { color: 'border-amber-400', titleColor: 'text-amber-400', title: 'Detonante', text: 'Formada tras el colosal impacto que desprendió material para crear la Luna.' },
+          { color: 'border-thermalOrange', titleColor: 'text-thermalOrange', title: 'Inestabilidad', text: 'Continúa la pérdida de gases ligeros al espacio (neón, argón primordial).' },
+          { color: 'border-red-400', titleColor: 'text-red-400', title: 'Carácter Reductor', text: 'Un ambiente tóxico dominado por gases de la nebulosa solar (H₂) y expulsiones volcánicas extremas (CO₂, N₂, vapor de agua).' }
+        ]
+      },
+      phase2: {
+        badge: 'HACE 4.000 MILLONES DE AÑOS',
+        chem: 'Reductora débil (CH₄, NH₃, CO₂, N₂)',
+        o2: '0.0% (Dominio metanógeno)',
+        title: 'Fase II: Bombardeo y Atmósfera Secundaria',
+        cards: [
+          { color: 'border-cyanNeon', titleColor: 'text-cyanNeon', title: 'Gran Bombardeo Tardío', text: 'Lluvia de asteroides y cometas que inyectaron masivas cantidades de agua, CO₂, metano (CH₄) y amoníaco.' },
+          { color: 'border-bioticGreen', titleColor: 'text-bioticGreen', title: 'La Primera Huella Biológica', text: 'Aparición en los océanos primitivos de protobacterias metanógenas.' },
+          { color: 'border-teal-400', titleColor: 'text-teal-400', title: 'Intervención Bioquímica', text: 'Estos microorganismos consumieron CO₂ masivamente y produjeron metano, tornando la atmósfera "reductora débil".' }
+        ]
+      },
+      phase3: {
+        badge: 'HACE 3.100 – 2.400 MILLONES DE AÑOS',
+        chem: 'Oxidante (78% N₂, 21% O₂, Escudo O₃)',
+        o2: 'En ascenso hasta 21% actual',
+        title: 'Fase III: El Gran Evento Oxidativo',
+        cards: [
+          { color: 'border-bioticGreen', titleColor: 'text-bioticGreen', title: 'Revolución Fotosintética', text: 'Las cianobacterias comienzan a usar energía solar, produciendo oxígeno (O₂) como desecho metabólico.' },
+          { color: 'border-cyanNeon', titleColor: 'text-cyanNeon', title: 'Creación del Escudo (O₃)', text: 'El O₂ sube a la estratosfera, recibe radiación UV y crea la Capa de Ozono (O₃) protectora.' },
+          { color: 'border-sky-300', titleColor: 'text-sky-300', title: 'Inversión Química y N₂ Residual', text: 'El metano se desploma por recombinación fotoquímica. El nitrógeno volcánico inerte se acumula hasta dominar el 78% del aire.' }
+        ]
+      }
+    };
+
+    function selectEra(key) {
+      selectedEraKey = key;
+      const data = erasData[key];
+      document.getElementById('eraBadgeText').textContent = data.badge;
+      document.getElementById('eraChemText').textContent = data.chem;
+      document.getElementById('eraO2Text').textContent = data.o2;
+      document.getElementById('eraTitle').textContent = data.title;
+
+      document.getElementById('eraCardsContainer').innerHTML = data.cards.map(c => `
+        <div class="p-3.5 rounded-xl bg-panelLight/80 border-l-4 ${c.color}">
+          <strong class="${c.titleColor} font-display">${c.title}:</strong> ${c.text}
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.era-btn').forEach(btn => {
+        if (btn.dataset.era === key) {
+          btn.classList.add('border-2', 'border-cyanNeon', 'bg-cyanNeon/15');
+          btn.classList.remove('border', 'border-slate-700', 'bg-panel');
+        } else {
+          btn.classList.remove('border-2', 'border-cyanNeon', 'bg-cyanNeon/15');
+          btn.classList.add('border', 'border-slate-700', 'bg-panel');
+        }
+      });
+
+      initEvolutionParticles();
+    }
+
+    function initEvolutionParticles() {
+      const w = evoCanvas.width = evoCanvas.offsetWidth;
+      const h = evoCanvas.height = evoCanvas.offsetHeight;
+      evoParticles = Array.from({ length: 30 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 2,
+        vy: -Math.random() * 1.8 - 0.4,
+        r: Math.random() * 3 + 1.5
+      }));
+    }
+
+    function drawEvolutionCanvas(time) {
+      const w = evoCanvas.width;
+      const h = evoCanvas.height;
+      evoCtx.clearRect(0, 0, w, h);
+
+      if (selectedEraKey === 'genesis') {
+        // Proto-Tierra fundida + planetesimales + fuga de hidrógeno
+        const cx = w / 2;
+        const cy = h * 0.62;
+        const grad = evoCtx.createRadialGradient(cx, cy, 20, cx, cy, 115);
+        grad.addColorStop(0, '#fef08a');
+        grad.addColorStop(0.45, '#ea580c');
+        grad.addColorStop(0.85, '#7f1d1d');
+        grad.addColorStop(1, 'rgba(127, 29, 29, 0)');
+        evoCtx.fillStyle = grad;
+        evoCtx.beginPath();
+        evoCtx.arc(cx, cy, 115, 0, Math.PI * 2);
+        evoCtx.fill();
+
+        // Fuga primordial de H2 hacia el espacio
+        evoParticles.forEach(p => {
+          p.y += p.vy * 1.4;
+          p.x += Math.sin(time * 0.005 + p.y * 0.05) * 0.8;
+          if (p.y < 10) { p.y = cy; p.x = cx + (Math.random() - 0.5) * 120; }
+          evoCtx.fillStyle = 'rgba(251, 191, 36, 0.75)';
+          evoCtx.beginPath();
+          evoCtx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+          evoCtx.fill();
+        });
+
+      } else if (selectedEraKey === 'phase1') {
+        // Cielo volcánico denso + volcanes en erupción + Luna cercana
+        const sky = evoCtx.createLinearGradient(0, 0, 0, h);
+        sky.addColorStop(0, '#1c1008');
+        sky.addColorStop(1, '#451a03');
+        evoCtx.fillStyle = sky;
+        evoCtx.fillRect(0, 0, w, h);
+
+        // Luna joven brillante
+        evoCtx.fillStyle = '#e2e8f0';
+        evoCtx.beginPath();
+        evoCtx.arc(w * 0.8, 65, 24, 0, Math.PI * 2);
+        evoCtx.fill();
+
+        // Conos volcánicos
+        evoCtx.fillStyle = '#0f0a08';
+        evoCtx.beginPath();
+        evoCtx.moveTo(0, h);
+        evoCtx.lineTo(w * 0.28, h * 0.52);
+        evoCtx.lineTo(w * 0.55, h);
+        evoCtx.lineTo(w * 0.78, h * 0.58);
+        evoCtx.lineTo(w, h);
+        evoCtx.fill();
+
+        // Gases volcánicos (CO2, N2, H2O)
+        evoParticles.forEach(p => {
+          p.y += p.vy;
+          p.x += (Math.random() - 0.5) * 1.2;
+          if (p.y < 20) { p.y = h * 0.55; p.x = w * (Math.random() > 0.5 ? 0.28 : 0.78); }
+          evoCtx.fillStyle = 'rgba(255, 94, 58, 0.55)';
+          evoCtx.beginPath();
+          evoCtx.arc(p.x, p.y, p.r * 1.6, 0, Math.PI * 2);
+          evoCtx.fill();
+        });
+
+      } else if (selectedEraKey === 'phase2') {
+        // Gran Bombardeo Tardío + Océano temprano con bacterias metanógenas
+        evoCtx.fillStyle = '#061224';
+        evoCtx.fillRect(0, 0, w, h);
+
+        // Cometas impactando
+        evoParticles.forEach((p, idx) => {
+          if (idx < 10) {
+            p.x += 3.2;
+            p.y += 2.6;
+            if (p.y > h * 0.65) { p.x = Math.random() * w * 0.7; p.y = 0; }
+            evoCtx.strokeStyle = '#38bdf8';
+            evoCtx.lineWidth = 2.5;
+            evoCtx.beginPath();
+            evoCtx.moveTo(p.x - 25, p.y - 20);
+            evoCtx.lineTo(p.x, p.y);
+            evoCtx.stroke();
+          }
+        });
+
+        // Océano primordial
+        evoCtx.fillStyle = '#0c4a6e';
+        evoCtx.fillRect(0, h * 0.65, w, h * 0.35);
+
+        // Protobacterias metanógenas liberando CH4
+        for (let i = 0; i < 6; i++) {
+          const bx = w * (0.15 + i * 0.14);
+          const by = h * 0.8 + Math.sin(time * 0.003 + i) * 6;
+          evoCtx.strokeStyle = '#00ff9d';
+          evoCtx.lineWidth = 2;
+          evoCtx.beginPath();
+          evoCtx.arc(bx, by, 10, 0, Math.PI * 2);
+          evoCtx.stroke();
+          evoCtx.fillStyle = '#00ff9d';
+          evoCtx.font = '9px JetBrains Mono';
+          evoCtx.fillText('CH₄', bx - 8, by - 16 - ((time * 0.03 + i * 15) % 35));
+        }
+
+      } else if (selectedEraKey === 'phase3') {
+        // Gran Evento Oxidativo: Cielo azul, estromatolitos/cianobacterias y burbujas de O2 creando O3
+        const sky = evoCtx.createLinearGradient(0, 0, 0, h * 0.62);
+        sky.addColorStop(0, '#03152e');
+        sky.addColorStop(1, '#0284c7');
+        evoCtx.fillStyle = sky;
+        evoCtx.fillRect(0, 0, w, h * 0.62);
+
+        // Banda naciente de Ozono O3
+        evoCtx.fillStyle = 'rgba(0, 255, 157, 0.22)';
+        evoCtx.fillRect(0, 32, w, 20);
+        evoCtx.fillStyle = '#00ff9d';
+        evoCtx.font = 'bold 10px JetBrains Mono';
+        evoCtx.fillText('FORMACIÓN DE LA CAPA DE OZONO (O₃)', 16, 46);
+
+        // Océano iluminado
+        evoCtx.fillStyle = '#065f46';
+        evoCtx.fillRect(0, h * 0.62, w, h * 0.38);
+
+        // Colonias de cianobacterias liberando O2 hacia la atmósfera
+        evoParticles.forEach(p => {
+          p.y += p.vy;
+          p.x += Math.sin(time * 0.004 + p.y * 0.04) * 0.5;
+          if (p.y < 42) { p.y = h * 0.9; p.x = Math.random() * w; }
+          evoCtx.strokeStyle = '#00ff9d';
+          evoCtx.fillStyle = 'rgba(0, 255, 157, 0.3)';
+          evoCtx.beginPath();
+          evoCtx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+          evoCtx.fill();
+          evoCtx.stroke();
+        });
+      }
+    }
+
+    // =========================================================================
+    // 8. MÓDULO 6: EVALUACIÓN DIDÁCTICA INTERACTIVA (QUIZ DE 5 PREGUNTAS)
+    // =========================================================================
+    const quizQuestions = [
+      {
+        q: '1. ¿Qué porcentaje de la masa total de gases de la atmósfera se concentra en la Troposfera por atracción gravitatoria?',
+        options: ['21%', '50%', '75% (Tres cuartas partes)', '99%'],
+        correct: 2,
+        feedback: '¡Correcto! La gravedad concentra el 75% de toda la masa gaseosa en la Troposfera (0 – 12/20 km).'
+      },
+      {
+        q: '2. ¿Por qué aumenta la temperatura con la altitud dentro de la Estratosfera?',
+        options: [
+          'Por la fricción de los meteoritos al desintegrarse',
+          'Porque la capa de ozono (O₃) absorbe calor de la radiación solar ultravioleta (UV)',
+          'Por el calor geotérmico de los volcanes submarinos',
+          'Por la presencia de la Estación Espacial Internacional'
+        ],
+        correct: 1,
+        feedback: '¡Exacto! La Ozonosfera absorbe la radiación UV letal y libera calor, generando una inversión térmica.'
+      },
+      {
+        q: '3. En la Termosfera se alcanzan hasta 2.482 °C, pero un astronauta no se quemaría por contacto con el aire ni escucharía sonidos. ¿Por qué?',
+        options: [
+          'Porque el aire está compuesto 100% por Helio líquido',
+          'Porque la densidad de moléculas es tan baja (cuasi-vacío) que no hay transferencia de calor ni propagación sonora',
+          'Porque los vientos supersónicos enfrían los trajes',
+          'Porque la gravedad es cero absoluto'
+        ],
+        correct: 1,
+        feedback: '¡Muy bien! Aunque cada molécula aislada tiene altísima energía cinética, hay muy pocas colisiones para transferir calor o sonido.'
+      },
+      {
+        q: '4. ¿Cuál es la diferencia térmica global entre una Tierra sin atmósfera y nuestra Tierra con efecto invernadero natural?',
+        options: [
+          'De -18 °C (Planeta Helado) a +15 °C (El Incubador)',
+          'De 0 °C a +100 °C',
+          'De -90 °C a +2.482 °C',
+          'No existe diferencia térmica relevante'
+        ],
+        correct: 0,
+        feedback: '¡Correcto! Sin gases de efecto invernadero la Tierra tendría una media de -18 °C; la atmósfera retiene radiación infrarroja manteniendo +15 °C.'
+      },
+      {
+        q: '5. ¿Qué organismos desencadenaron el Gran Evento Oxidativo hace 3.100 – 2.400 millones de años, permitiendo crear la capa de ozono?',
+        options: [
+          'Protobacterias metanógenas',
+          'Cianobacterias mediante fotosíntesis oxigénica',
+          'Helechos gigantes terrestres',
+          'Impactos de cometas ricos en ozono líquido'
+        ],
+        correct: 1,
+        feedback: '¡Brillante! Las cianobacterias liberaron O₂ como subproducto fotosintético, transformando la química del aire y formando el escudo O₃.'
+      }
+    ];
+
+    let quizAnswered = new Array(quizQuestions.length).fill(false);
+    let score = 0;
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizQuestions.map((item, qIdx) => `
+        <div class="p-4 sm:p-5 rounded-xl bg-panelLight/60 border border-slate-800 space-y-3" id="qbox-${qIdx}">
+          <p class="font-display font-bold text-white text-sm sm:text-base">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, oIdx) => `
+              <button onclick="answerQuiz(${qIdx}, ${oIdx})" id="qopt-${qIdx}-${oIdx}"
+                class="text-left p-3 rounded-lg border border-slate-700 bg-panel hover:border-cyanNeon text-xs sm:text-sm text-slate-200 transition cursor-pointer">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div id="qfb-${qIdx}" class="hidden text-xs p-3 rounded-lg font-medium"></div>
+        </div>
+      `).join('');
+    }
+
+    function answerQuiz(qIdx, oIdx) {
+      if (quizAnswered[qIdx]) return;
+      quizAnswered[qIdx] = true;
+
+      const item = quizQuestions[qIdx];
+      const isCorrect = oIdx === item.correct;
+      const fbEl = document.getElementById(`qfb-${qIdx}`);
+
+      if (isCorrect) {
+        score++;
+        document.getElementById('quizScore').textContent = score;
+        document.getElementById(`qopt-${qIdx}-${oIdx}`).classList.add('border-bioticGreen', 'bg-bioticGreen/20', 'text-white', 'font-semibold');
+        fbEl.className = 'text-xs p-3 rounded-lg bg-bioticGreen/15 border border-bioticGreen/40 text-bioticGreen block';
+        fbEl.textContent = item.feedback;
+      } else {
+        document.getElementById(`qopt-${qIdx}-${oIdx}`).classList.add('border-thermalOrange', 'bg-thermalOrange/20', 'text-white');
+        document.getElementById(`qopt-${qIdx}-${item.correct}`).classList.add('border-bioticGreen', 'bg-bioticGreen/15', 'text-bioticGreen');
+        fbEl.className = 'text-xs p-3 rounded-lg bg-thermalOrange/15 border border-thermalOrange/40 text-orange-200 block';
+        fbEl.textContent = `Respuesta incorrecta. ${item.feedback}`;
+      }
+    }
+
+    function resetQuiz() {
+      quizAnswered = new Array(quizQuestions.length).fill(false);
+      score = 0;
+      document.getElementById('quizScore').textContent = '0';
+      renderQuiz();
+    }
+
+    // =========================================================================
+    // 9. BUCLE MAESTRO DE ANIMACIÓN Y REDIMENSIONAMIENTO RESPONSIVO
+    // =========================================================================
+    function resizeAllCanvases() {
+      initHeroScene();
+      initGravitySim();
+      initGasMolecules();
+      initLayerSimulation();
+      if (ozoneCanvas) {
+        ozoneCanvas.width = ozoneCanvas.offsetWidth;
+        ozoneCanvas.height = ozoneCanvas.offsetHeight;
+      }
+      if (ghCanvas) {
+        ghCanvas.width = ghCanvas.offsetWidth;
+        ghCanvas.height = ghCanvas.offsetHeight;
+      }
+      if (aeroCanvas) {
+        aeroCanvas.width = aeroCanvas.offsetWidth;
+        aeroCanvas.height = aeroCanvas.offsetHeight;
+      }
+      initConvection();
+      initEvolutionParticles();
+    }
+
+    function masterAnimationLoop(time) {
+      drawHeroScene(time);
+      drawGravitySim();
+      drawGasMolecules();
+      drawLayerCanvas(time);
+      drawOzoneCanvas(time);
+      drawGreenhouseCanvas(time);
+      drawAeroCanvas(time);
+      drawConvectionCanvas(time);
+      drawEvolutionCanvas(time);
+      requestAnimationFrame(masterAnimationLoop);
+    }
+
+    window.addEventListener('resize', resizeAllCanvases);
+
+    window.onload = function () {
+      // Animaciones de entrada GSAP en portada
+      gsap.from('.hero-badge', { y: -20, opacity: 0, duration: 0.7, ease: 'power3.out' });
+      gsap.from('.hero-title', { y: 30, opacity: 0, duration: 0.9, delay: 0.15, ease: 'power3.out' });
+      gsap.from('.hero-subtitle', { y: 20, opacity: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' });
+      gsap.from('.hero-desc', { opacity: 0, duration: 0.8, delay: 0.45 });
+      gsap.from('.hero-stats > div', { y: 25, opacity: 0, duration: 0.7, stagger: 0.12, delay: 0.55, ease: 'power2.out' });
+      gsap.from('.hero-cta', { y: 15, opacity: 0, duration: 0.7, delay: 0.8 });
+
+      // Inicializar estados y canvas
+      resizeAllCanvases();
+      selectGas('N2');
+      selectLayer('troposphere');
+      setOzoneStep(1);
+      updateThermoProbe(10);
+      setGreenhouseMode(true);
+      highlightThermoStep(1);
+      selectEra('genesis');
+      renderQuiz();
+
+      // Iniciar bucle continuo
+      requestAnimationFrame(masterAnimationLoop);
+    };
+  </script>
+</body>
+</html>
